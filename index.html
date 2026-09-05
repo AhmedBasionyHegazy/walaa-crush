@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ff5e97" />
+  <meta name="description" content="Walaa's Sweet Crush - A delightful Candy Crush match-3 game dedicated with love to Walaa." />
+  <title>Walaa's Sweet Crush ❤️ A Sweet Love Story</title>
+  
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Google Fonts: Fredoka & Pacifico for playful candy aesthetics -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Ambient floating hearts background -->
+  <div class="hearts-background" id="hearts-bg" aria-hidden="true"></div>
+
+  <!-- Main Game Canvas Container -->
+  <div class="game-wrapper">
+    <!-- Header / Branding -->
+    <header class="game-header">
+      <div class="header-left">
+        <button id="btn-levels" class="btn-icon" title="Select Level" aria-label="Select Level">
+          <span class="icon">🗺️</span>
+        </button>
+        <button id="btn-sound" class="btn-icon" title="Toggle Sound" aria-label="Toggle Sound">
+          <span class="icon" id="sound-icon">🔊</span>
+        </button>
+      </div>
+
+      <div class="branding-title">
+        <h1 class="logo-text">Walaa's <span class="highlight">Sweet Crush</span> <span class="pulse-heart">❤️</span></h1>
+        <p class="tagline">Made with endless love for my sweet Walaa</p>
+      </div>
+
+      <div class="header-right">
+        <button id="btn-hint" class="btn-icon" title="Get Hint" aria-label="Get Hint">
+          <span class="icon">💡</span>
+        </button>
+        <button id="btn-restart" class="btn-icon" title="Restart Game" aria-label="Restart Game">
+          <span class="icon">🔄</span>
+        </button>
+        <button id="btn-info" class="btn-icon" title="Love Note & Rules" aria-label="About">
+          <span class="icon">💌</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Top HUD: Stats Bar -->
+    <section class="game-hud">
+      <!-- Target & Level Info -->
+      <div class="hud-card level-card">
+        <div class="hud-label" id="level-title">Level 1</div>
+        <div class="hud-goal" id="level-goal-desc">Target: 2,000 pts</div>
+      </div>
+
+      <!-- Moves Left -->
+      <div class="hud-card moves-card">
+        <div class="hud-label">MOVES</div>
+        <div class="hud-value" id="moves-count">20</div>
+      </div>
+
+      <!-- Score & Stars -->
+      <div class="hud-card score-card">
+        <div class="hud-label">SCORE</div>
+        <div class="hud-value score-text" id="score-count">0</div>
+        <!-- 3 Stars Rating Progress -->
+        <div class="star-meter-wrapper">
+          <div class="star-meter-bar" id="star-meter-bar"></div>
+          <div class="star-milestone s1" id="star-1">⭐</div>
+          <div class="star-milestone s2" id="star-2">⭐</div>
+          <div class="star-milestone s3" id="star-3">⭐</div>
+        </div>
+      </div>
+
+      <!-- Walaa Love Meter -->
+      <div class="hud-card love-meter-card">
+        <div class="hud-label">LOVE METER ❤️</div>
+        <div class="love-meter-track">
+          <div class="love-meter-fill" id="love-meter-fill" style="width: 0%;"></div>
+        </div>
+        <div class="love-meter-text" id="love-meter-text">0%</div>
+      </div>
+    </section>
+
+    <!-- Interactive Game Board Arena -->
+    <main class="board-container" id="board-container">
+      <div class="board-frame">
+        <div class="board-grid" id="board-grid"></div>
+        <!-- Particle & Laser Canvas Overlay -->
+        <canvas id="effects-canvas" class="effects-canvas"></canvas>
+        <!-- In-game banner alert (Reshuffle, Sugar Rush, Level Start) -->
+        <div class="board-banner" id="board-banner"></div>
+      </div>
+    </main>
+
+    <!-- Footer Dedication -->
+    <footer class="game-footer">
+      <span class="footer-heart">💖</span>
+      <span>To my beloved <strong>Walaa</strong> — You make life sweeter every single day.</span>
+      <span class="footer-heart">💖</span>
+    </footer>
+  </div>
+
+  <!-- Toast Compliments Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- MODAL: Level Complete / Victory -->
+  <div class="modal-overlay" id="modal-victory">
+    <div class="modal-card victory-card">
+      <div class="modal-ribbon">SWEET VICTORY! 🎉</div>
+      <div class="victory-avatar">
+        <span class="crown">👑</span>
+        <span class="avatar-heart">💖</span>
+      </div>
+      <h2 class="modal-title">Walaa Won My Heart!</h2>
+      <p class="modal-subtitle" id="victory-message">You cleared this sweet challenge with divine style!</p>
+      
+      <div class="victory-stars" id="victory-stars-display">
+        <span class="v-star star-bounce">⭐</span>
+        <span class="v-star star-bounce delay-1">⭐</span>
+        <span class="v-star star-bounce delay-2">⭐</span>
+      </div>
+
+      <div class="victory-stats">
+        <div class="v-stat-box">
+          <span class="v-stat-title">FINAL SCORE</span>
+          <span class="v-stat-value" id="victory-score">0</span>
+        </div>
+        <div class="v-stat-box">
+          <span class="v-stat-title">MOVES REMAINING</span>
+          <span class="v-stat-value" id="victory-moves">0</span>
+        </div>
+      </div>
+
+      <div class="love-letter-quote">
+        "Just like these candies, every moment with you is sweet, colorful, and full of joy. I love you, Walaa! ❤️"
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-replay-level" class="btn-game btn-secondary">Play Again 🔄</button>
+        <button id="btn-next-level" class="btn-game btn-primary">Next Sweet Level 🍬</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Game Over / Out of Moves -->
+  <div class="modal-overlay" id="modal-gameover">
+    <div class="modal-card gameover-card">
+      <div class="modal-ribbon blue-ribbon">OUT OF MOVES!</div>
+      <div class="gameover-icon">🍭💔</div>
+      <h2 class="modal-title">Almost There, Sweetheart!</h2>
+      <p class="modal-subtitle">Don't give up! Love is all about another sweet chance.</p>
+
+      <div class="victory-stats">
+        <div class="v-stat-box">
+          <span class="v-stat-title">SCORE</span>
+          <span class="v-stat-value" id="gameover-score">0</span>
+        </div>
+        <div class="v-stat-box">
+          <span class="v-stat-title">TARGET</span>
+          <span class="v-stat-value" id="gameover-target">0</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-retry" class="btn-game btn-primary">Try Again With Love ❤️</button>
+        <button id="btn-gameover-menu" class="btn-game btn-secondary">Select Level 🗺️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Level Selector -->
+  <div class="modal-overlay" id="modal-levels">
+    <div class="modal-card levels-card">
+      <div class="modal-ribbon pink-ribbon">LEVEL SELECT</div>
+      <h2 class="modal-title">Walaa's Sweet Journey 🍬</h2>
+      <p class="modal-subtitle">Choose a stage or play endless relaxation mode:</p>
+
+      <div class="level-grid" id="level-selector-grid">
+        <!-- Generated by game.js -->
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-close-levels" class="btn-game btn-secondary">Back to Game ✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Love Letter & Rules -->
+  <div class="modal-overlay" id="modal-info">
+    <div class="modal-card info-card">
+      <div class="modal-ribbon purple-ribbon">FOR WALAA WITH LOVE ❤️</div>
+      <h2 class="modal-title">Walaa's Sweet Match Guide</h2>
+      <div class="info-content">
+        <p class="intro-p">This game was handcrafted specially for <strong>Walaa</strong>. Match colorful candies, make explosive sweet combinations, and spread love across every stage!</p>
+        
+        <h3>🍬 Special Candies & Combos:</h3>
+        <ul class="info-list">
+          <li><strong>Match 4 in a line:</strong> Creates a <em>Striped Candy</em> that clears an entire row or column!</li>
+          <li><strong>Match in L or T shape:</strong> Creates an explosive <em>Wrapped Candy</em> that blasts in 3x3 twice!</li>
+          <li><strong>Match 5 in a row:</strong> Creates the <em>Walaa Love Bomb Donut</em>! Swap with any color to clear ALL of them!</li>
+          <li><strong>Swap Two Special Candies:</strong> Triggers super explosions, double line beams, and full-board clears!</li>
+        </ul>
+
+        <h3>💖 Controls:</h3>
+        <p>Click/tap a candy and click/tap an adjacent candy to swap, or simply drag and swipe smoothly!</p>
+
+        <div class="romantic-signature">
+          "Every day with you is my favorite adventure. Forever yours, Ahmed." ❤️
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-close-info" class="btn-game btn-primary">Let's Play! 🍬</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
