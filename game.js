@@ -1,6 +1,11 @@
 /**
- * Walaa's Sweet Crush - Complete Mobile-First Match-3 Game Engine
- * Handcrafted with love for Walaa ❤️
+ * Walaa's Sweet Crush - Elite Match-3 Game Engine
+ * Featuring:
+ * - Real-time tactile Drag & Drop with interactive neighbor sliding
+ * - Bulletproof Match-3 cascade logic (no false reverts)
+ * - Unique UID candy tracking (zero desynchronization)
+ * - Pure Web Audio API synthesized soundscape
+ * - Custom responsive particles & romantic dedication for Walaa ❤️
  */
 
 /* ==========================================================================
@@ -128,7 +133,7 @@ const SVG_ICONS = {
 };
 
 /* ==========================================================================
-   2. Web Audio API Synthesizer (With Mobile Autoplay Support)
+   2. Web Audio Synthesizer
    ========================================================================== */
 class SoundEngine {
   constructor() {
@@ -156,7 +161,7 @@ class SoundEngine {
     return this.muted;
   }
 
-  playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.25, pitchDrop = true) {
+  playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.22, pitchDrop = true) {
     if (this.muted) return;
     try {
       this.initContext();
@@ -187,22 +192,19 @@ class SoundEngine {
   }
 
   playSwap() {
-    this.playTone(380, 'sine', 0.12, 0.2, true);
+    this.playTone(400, 'sine', 0.1, 0.2, true);
   }
 
   playInvalid() {
-    this.playTone(200, 'sawtooth', 0.2, 0.15, true);
+    this.playTone(200, 'sawtooth', 0.18, 0.15, true);
   }
 
   playMatch(combo = 1) {
     if (this.muted) return;
     const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
     const baseIndex = Math.min(notes.length - 2, combo - 1);
-    const n1 = notes[baseIndex];
-    const n2 = notes[baseIndex + 1];
-
-    this.playTone(n1, 'sine', 0.18, 0.22, false);
-    setTimeout(() => this.playTone(n2, 'triangle', 0.22, 0.25, false), 60);
+    this.playTone(notes[baseIndex], 'sine', 0.18, 0.22, false);
+    setTimeout(() => this.playTone(notes[baseIndex + 1], 'triangle', 0.22, 0.25, false), 60);
   }
 
   playSpecial() {
@@ -214,7 +216,7 @@ class SoundEngine {
 
   playExplosion() {
     if (this.muted) return;
-    this.playTone(120, 'sawtooth', 0.4, 0.35, true);
+    this.playTone(120, 'sawtooth', 0.38, 0.32, true);
   }
 
   playLaser() {
@@ -226,13 +228,13 @@ class SoundEngine {
       const gain = this.ctx.createGain();
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.28);
-      gain.gain.setValueAtTime(0.28, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.28);
+      osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.26);
+      gain.gain.setValueAtTime(0.26, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.26);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.28);
+      osc.stop(this.ctx.currentTime + 0.26);
     } catch(e) {}
   }
 
@@ -253,7 +255,7 @@ class SoundEngine {
 }
 
 /* ==========================================================================
-   3. Particle & Laser Canvas Effects System (HiDPI Retina Ready)
+   3. HiDPI Canvas Particle & Laser Effects
    ========================================================================== */
 class ParticleEngine {
   constructor(canvas) {
@@ -281,7 +283,7 @@ class ParticleEngine {
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 2 + Math.random() * 5;
-      const isHeart = Math.random() > 0.6;
+      const isHeart = Math.random() > 0.55;
       this.particles.push({
         x, y,
         vx: Math.cos(angle) * speed,
@@ -333,7 +335,7 @@ class ParticleEngine {
     const logicalH = this.canvas.height / this.dpr;
     this.ctx.clearRect(0, 0, logicalW, logicalH);
 
-    // 1. Draw Lasers / Beams
+    // Beams
     for (let i = this.beams.length - 1; i >= 0; i--) {
       const b = this.beams[i];
       this.ctx.save();
@@ -356,7 +358,7 @@ class ParticleEngine {
       if (b.alpha <= 0) this.beams.splice(i, 1);
     }
 
-    // 2. Draw Particles
+    // Particles
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
 
@@ -416,7 +418,7 @@ class ParticleEngine {
 }
 
 /* ==========================================================================
-   4. Level Configurations
+   4. Level Configurations & Compliments
    ========================================================================== */
 const LEVELS = [
   {
@@ -501,16 +503,18 @@ const COMPLIMENTS = [
 ];
 
 /* ==========================================================================
-   5. Main Game Engine Class
+   5. Main Game Engine Class (Unique UID Candy Architecture)
    ========================================================================== */
+let globalCandyUid = 0;
+
 class WalaaCrushGame {
   constructor() {
     this.rows = 8;
     this.cols = 8;
-    this.grid = [];
-    this.jellyGrid = [];
-    this.selectedCandy = null;
+    this.grid = [];      // 8x8 array storing candy objects { uid, type, special }
+    this.jellyGrid = []; // 8x8 array storing boolean jelly presence
     this.isProcessing = false;
+    this.selectedCoord = null;
     this.currentLevelIndex = 0;
     this.score = 0;
     this.movesLeft = 20;
@@ -518,6 +522,9 @@ class WalaaCrushGame {
     this.createdSpecials = 0;
     this.loveMeterVal = 0;
     this.idleTimer = null;
+
+    // Active drag-and-drop state
+    this.dragState = null;
 
     // Subsystems
     this.sound = new SoundEngine();
@@ -553,15 +560,21 @@ class WalaaCrushGame {
     };
 
     this.initBackgroundHearts();
-    this.initGlobalTouchUnlock();
-    this.initEvents();
+    this.initGlobalAudioUnlock();
+    this.initBoardDragAndDrop();
+    this.initButtons();
     this.loadLevel(0);
   }
 
-  /* ------------------------------------------------------------------------
-     Mobile Audio Unlocking on First Gesture
-     ------------------------------------------------------------------------ */
-  initGlobalTouchUnlock() {
+  createCandyObject(type, special = null) {
+    return {
+      uid: ++globalCandyUid,
+      type,
+      special
+    };
+  }
+
+  initGlobalAudioUnlock() {
     const unlock = () => {
       this.sound.resumeAudio();
       window.removeEventListener('touchstart', unlock, true);
@@ -573,9 +586,6 @@ class WalaaCrushGame {
     window.addEventListener('click', unlock, true);
   }
 
-  /* ------------------------------------------------------------------------
-     Floating Romantic Ambient Background
-     ------------------------------------------------------------------------ */
   initBackgroundHearts() {
     const container = document.getElementById('hearts-bg');
     if (!container) return;
@@ -592,45 +602,25 @@ class WalaaCrushGame {
     }
   }
 
-  /* ------------------------------------------------------------------------
-     Event Handlers & UI Controls
-     ------------------------------------------------------------------------ */
-  initEvents() {
-    // Sound Toggle
+  initButtons() {
     document.getElementById('btn-sound').addEventListener('click', () => {
       const isMuted = this.sound.toggleMute();
       this.dom.soundIcon.textContent = isMuted ? '🔇' : '🔊';
     });
     if (this.sound.muted) this.dom.soundIcon.textContent = '🔇';
 
-    // Hint Button
-    document.getElementById('btn-hint').addEventListener('click', () => {
-      this.showHint();
-    });
+    document.getElementById('btn-hint').addEventListener('click', () => this.showHint());
+    document.getElementById('btn-restart').addEventListener('click', () => this.loadLevel(this.currentLevelIndex));
 
-    // Restart Button
-    document.getElementById('btn-restart').addEventListener('click', () => {
-      this.loadLevel(this.currentLevelIndex);
-    });
-
-    // Level Select Modal Trigger
     document.getElementById('btn-levels').addEventListener('click', () => {
       this.renderLevelSelector();
       this.openModal(this.dom.modalLevels);
     });
-    document.getElementById('btn-close-levels').addEventListener('click', () => {
-      this.closeModal(this.dom.modalLevels);
-    });
+    document.getElementById('btn-close-levels').addEventListener('click', () => this.closeModal(this.dom.modalLevels));
 
-    // Love Letter & Rules Modal
-    document.getElementById('btn-info').addEventListener('click', () => {
-      this.openModal(this.dom.modalInfo);
-    });
-    document.getElementById('btn-close-info').addEventListener('click', () => {
-      this.closeModal(this.dom.modalInfo);
-    });
+    document.getElementById('btn-info').addEventListener('click', () => this.openModal(this.dom.modalInfo));
+    document.getElementById('btn-close-info').addEventListener('click', () => this.closeModal(this.dom.modalInfo));
 
-    // Victory Actions
     document.getElementById('btn-replay-level').addEventListener('click', () => {
       this.closeModal(this.dom.modalVictory);
       this.loadLevel(this.currentLevelIndex);
@@ -641,7 +631,6 @@ class WalaaCrushGame {
       this.loadLevel(nextIdx);
     });
 
-    // Game Over Actions
     document.getElementById('btn-retry').addEventListener('click', () => {
       this.closeModal(this.dom.modalGameOver);
       this.loadLevel(this.currentLevelIndex);
@@ -652,332 +641,259 @@ class WalaaCrushGame {
       this.openModal(this.dom.modalLevels);
     });
 
-    // Window Resize / Orientation Change
     window.addEventListener('resize', () => {
       this.particles.resize();
-      this.renderGridVisuals();
+      this.syncAllDOMPositions(false);
     });
     window.addEventListener('orientationchange', () => {
       setTimeout(() => {
         this.particles.resize();
-        this.renderGridVisuals();
+        this.syncAllDOMPositions(false);
       }, 150);
     });
   }
 
-  openModal(modalEl) {
-    modalEl.classList.add('active');
-  }
+  openModal(modalEl) { modalEl.classList.add('active'); }
+  closeModal(modalEl) { modalEl.classList.remove('active'); }
 
-  closeModal(modalEl) {
-    modalEl.classList.remove('active');
-  }
+  /* ========================================================================
+     Real-Time Drag-and-Drop Gesture Controller
+     ======================================================================== */
+  initBoardDragAndDrop() {
+    const gridEl = this.dom.boardGrid;
 
-  /* ------------------------------------------------------------------------
-     Level Loading & Initialization
-     ------------------------------------------------------------------------ */
-  loadLevel(index) {
-    this.currentLevelIndex = index;
-    const lvl = LEVELS[index];
+    const getCellCoordFromPoint = (clientX, clientY) => {
+      const rect = gridEl.getBoundingClientRect();
+      const cellSize = rect.width / 8;
+      const c = Math.floor((clientX - rect.left) / cellSize);
+      const r = Math.floor((clientY - rect.top) / cellSize);
+      return { r, c, cellSize, rect };
+    };
 
-    this.score = 0;
-    this.movesLeft = lvl.moves;
-    this.collectedHearts = 0;
-    this.createdSpecials = 0;
-    this.loveMeterVal = 0;
-    this.selectedCandy = null;
-    this.isProcessing = false;
-
-    // Setup Jelly Grid
-    this.jellyGrid = [];
-    for (let r = 0; r < this.rows; r++) {
-      this.jellyGrid[r] = [];
-      for (let c = 0; c < this.cols; c++) {
-        if (lvl.jellies && r >= 2 && r <= 5 && c >= 2 && c <= 5) {
-          this.jellyGrid[r][c] = true;
-        } else {
-          this.jellyGrid[r][c] = false;
-        }
-      }
-    }
-
-    this.updateHUD();
-    this.generateValidInitialBoard();
-    this.renderBoardDOM();
-    this.showBanner(lvl.title);
-    this.resetIdleTimer();
-  }
-
-  /* ------------------------------------------------------------------------
-     Board Generation
-     ------------------------------------------------------------------------ */
-  generateValidInitialBoard() {
-    let attempts = 0;
-    do {
-      attempts++;
-      this.grid = [];
-      for (let r = 0; r < this.rows; r++) {
-        this.grid[r] = [];
-        for (let c = 0; c < this.cols; c++) {
-          let forbidden = [];
-          if (c >= 2 && this.grid[r][c-1]?.type === this.grid[r][c-2]?.type) {
-            forbidden.push(this.grid[r][c-1].type);
-          }
-          if (r >= 2 && this.grid[r-1][c]?.type === this.grid[r-2][c]?.type) {
-            forbidden.push(this.grid[r-1][c].type);
-          }
-
-          const available = CANDY_TYPES.filter(t => !forbidden.includes(t.id));
-          const chosen = available[Math.floor(Math.random() * available.length)];
-
-          this.grid[r][c] = {
-            r, c,
-            type: chosen.id,
-            special: null
-          };
-        }
-      }
-    } while (!this.hasPossibleMoves() && attempts < 100);
-  }
-
-  /* ------------------------------------------------------------------------
-     DOM Rendering
-     ------------------------------------------------------------------------ */
-  renderBoardDOM() {
-    this.dom.boardGrid.innerHTML = '';
-
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        const tile = document.createElement('div');
-        tile.className = `cell-tile ${(r + c) % 2 === 0 ? 'tile-light' : 'tile-dark'}`;
-        if (this.jellyGrid[r][c]) tile.classList.add('has-jelly');
-        tile.dataset.r = r;
-        tile.dataset.c = c;
-        this.dom.boardGrid.appendChild(tile);
-
-        const candyData = this.grid[r][c];
-        if (candyData) {
-          const candyEl = this.createCandyElement(candyData, r, c);
-          this.dom.boardGrid.appendChild(candyEl);
-        }
-      }
-    }
-    this.renderGridVisuals();
-  }
-
-  createCandyElement(candy, r, c) {
-    const el = document.createElement('div');
-    el.className = 'candy';
-    el.dataset.r = r;
-    el.dataset.c = c;
-    el.id = `candy-${r}-${c}`;
-
-    if (candy.special === 'striped-h') el.classList.add('striped-horizontal');
-    if (candy.special === 'striped-v') el.classList.add('striped-vertical');
-    if (candy.special === 'wrapped') el.classList.add('wrapped');
-    if (candy.special === 'color-bomb') el.classList.add('color-bomb');
-
-    if (candy.special === 'color-bomb') {
-      el.innerHTML = SVG_ICONS.colorBomb;
-    } else {
-      el.innerHTML = SVG_ICONS[candy.type] || SVG_ICONS.strawberry;
-    }
-
-    this.attachInteractionHandlers(el, r, c);
-    return el;
-  }
-
-  renderGridVisuals() {
-    const boardWidth = this.dom.boardGrid.clientWidth;
-    const cellSize = boardWidth / 8;
-
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        const candyEl = document.getElementById(`candy-${r}-${c}`);
-        if (candyEl) {
-          candyEl.style.width = `${cellSize * 0.92}px`;
-          candyEl.style.height = `${cellSize * 0.92}px`;
-          candyEl.style.left = `${c * cellSize + cellSize * 0.04}px`;
-          candyEl.style.top = `${r * cellSize + cellSize * 0.04}px`;
-        }
-      }
-    }
-  }
-
-  /* ------------------------------------------------------------------------
-     Rock-Solid Mobile Touch & Desktop Mouse Controller
-     ------------------------------------------------------------------------ */
-  attachInteractionHandlers(candyEl, r, c) {
-    let startX = 0;
-    let startY = 0;
-    let isSwiping = false;
-    let gestureActive = false;
-
-    // --- MOBILE TOUCH EVENTS ---
-    candyEl.addEventListener('touchstart', (e) => {
+    const handleStart = (clientX, clientY) => {
       if (this.isProcessing) return;
       this.sound.resumeAudio();
+      this.resetIdleTimer();
+      this.clearHints();
 
-      const touch = e.touches[0];
-      startX = touch.clientX;
-      startY = touch.clientY;
-      gestureActive = true;
-      isSwiping = false;
+      const { r, c, cellSize } = getCellCoordFromPoint(clientX, clientY);
+      if (!this.isValidCoord(r, c) || !this.grid[r][c]) return;
+
+      const candy = this.grid[r][c];
+      const candyEl = document.getElementById(`candy-u${candy.uid}`);
+      if (!candyEl) return;
+
+      this.dragState = {
+        r, c,
+        candy,
+        candyEl,
+        startX: clientX,
+        startY: clientY,
+        cellSize,
+        neighbor: null,
+        neighborEl: null,
+        hasSwapped: false,
+        isClickCandidate: true
+      };
+
+      candyEl.style.zIndex = '35';
+    };
+
+    const handleMove = (clientX, clientY, e) => {
+      if (!this.dragState || this.dragState.hasSwapped || this.isProcessing) return;
+      if (e.cancelable) e.preventDefault();
+
+      const ds = this.dragState;
+      let dx = clientX - ds.startX;
+      let dy = clientY - ds.startY;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist > 8) {
+        ds.isClickCandidate = false;
+      }
+
+      // Constrain to primary axis (horizontal or vertical)
+      let targetR = ds.r;
+      let targetC = ds.c;
+      let clampedX = 0;
+      let clampedY = 0;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal slide
+        targetC = ds.c + (dx > 0 ? 1 : -1);
+        clampedX = Math.max(-ds.cellSize, Math.min(ds.cellSize, dx));
+      } else {
+        // Vertical slide
+        targetR = ds.r + (dy > 0 ? 1 : -1);
+        clampedY = Math.max(-ds.cellSize, Math.min(ds.cellSize, dy));
+      }
+
+      // Check if neighbor exists
+      let validNeighbor = this.isValidCoord(targetR, targetC) ? this.grid[targetR][targetC] : null;
+
+      // Handle neighbor visual feedback
+      if (validNeighbor && (!ds.neighbor || ds.neighbor.uid !== validNeighbor.uid)) {
+        if (ds.neighborEl) ds.neighborEl.style.transform = '';
+        ds.neighbor = validNeighbor;
+        ds.neighborEl = document.getElementById(`candy-u${validNeighbor.uid}`);
+        if (ds.neighborEl) ds.neighborEl.style.zIndex = '25';
+      } else if (!validNeighbor && ds.neighborEl) {
+        ds.neighborEl.style.transform = '';
+        ds.neighbor = null;
+        ds.neighborEl = null;
+      }
+
+      // Apply live slide transforms!
+      ds.candyEl.style.transform = `translate(${clampedX}px, ${clampedY}px) scale(1.1)`;
+      if (ds.neighborEl) {
+        ds.neighborEl.style.transform = `translate(${-clampedX}px, ${-clampedY}px) scale(0.95)`;
+      }
+
+      // If dragged past 40% of the cell: Trigger immediate swap!
+      const threshold = ds.cellSize * 0.40;
+      if (validNeighbor && (Math.abs(clampedX) >= threshold || Math.abs(clampedY) >= threshold)) {
+        ds.hasSwapped = true;
+        this.finishDragAndSwap(ds.r, ds.c, targetR, targetC);
+      }
+    };
+
+    const handleEnd = () => {
+      if (!this.dragState) return;
+      const ds = this.dragState;
+      this.dragState = null;
+
+      // If already swapped via slide threshold, nothing more to do
+      if (ds.hasSwapped) return;
+
+      // Reset transforms with smooth transition
+      ds.candyEl.style.transition = 'transform 0.18s ease';
+      ds.candyEl.style.transform = '';
+      ds.candyEl.style.zIndex = '';
+      setTimeout(() => { if (ds.candyEl) ds.candyEl.style.transition = ''; }, 200);
+
+      if (ds.neighborEl) {
+        ds.neighborEl.style.transition = 'transform 0.18s ease';
+        ds.neighborEl.style.transform = '';
+        ds.neighborEl.style.zIndex = '';
+        setTimeout(() => { if (ds.neighborEl) ds.neighborEl.style.transition = ''; }, 200);
+      }
+
+      // If it was a clean tap (less than 8px movement)
+      if (ds.isClickCandidate) {
+        this.handleTap(ds.r, ds.c);
+      }
+    };
+
+    // Touch events
+    gridEl.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      handleStart(t.clientX, t.clientY);
     }, { passive: true });
 
-    candyEl.addEventListener('touchmove', (e) => {
-      if (!gestureActive || this.isProcessing) return;
-      if (e.cancelable) e.preventDefault(); // Stop mobile page bounce / scrolling
-
-      const touch = e.touches[0];
-      const dx = touch.clientX - startX;
-      const dy = touch.clientY - startY;
-      const threshold = 16; // Snappy mobile threshold
-
-      if (!isSwiping && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
-        isSwiping = true;
-        gestureActive = false;
-
-        let targetR = r;
-        let targetC = c;
-
-        if (Math.abs(dx) > Math.abs(dy)) {
-          targetC += dx > 0 ? 1 : -1;
-        } else {
-          targetR += dy > 0 ? 1 : -1;
-        }
-
-        if (this.isValidCoord(targetR, targetC)) {
-          this.attemptSwap(r, c, targetR, targetC);
-        }
-      }
+    gridEl.addEventListener('touchmove', (e) => {
+      const t = e.touches[0];
+      handleMove(t.clientX, t.clientY, e);
     }, { passive: false });
 
-    candyEl.addEventListener('touchend', (e) => {
-      if (!gestureActive || this.isProcessing) return;
-      gestureActive = false;
+    gridEl.addEventListener('touchend', () => handleEnd(), { passive: true });
+    gridEl.addEventListener('touchcancel', () => handleEnd(), { passive: true });
 
-      // If no swipe occurred, it's a direct tap!
-      if (!isSwiping) {
-        this.handleCandyClick(r, c);
-      }
-    }, { passive: true });
-
-    candyEl.addEventListener('touchcancel', () => {
-      gestureActive = false;
-      isSwiping = false;
-    }, { passive: true });
-
-    // --- DESKTOP MOUSE EVENTS ---
-    candyEl.addEventListener('mousedown', (e) => {
-      if (this.isProcessing || e.button !== 0) return;
-      startX = e.clientX;
-      startY = e.clientY;
-      gestureActive = true;
-      isSwiping = false;
+    // Mouse events
+    gridEl.addEventListener('mousedown', (e) => {
+      if (e.button === 0) handleStart(e.clientX, e.clientY);
     });
 
-    candyEl.addEventListener('mousemove', (e) => {
-      if (!gestureActive || this.isProcessing) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      const threshold = 20;
-
-      if (!isSwiping && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
-        isSwiping = true;
-        gestureActive = false;
-
-        let targetR = r;
-        let targetC = c;
-
-        if (Math.abs(dx) > Math.abs(dy)) {
-          targetC += dx > 0 ? 1 : -1;
-        } else {
-          targetR += dy > 0 ? 1 : -1;
-        }
-
-        if (this.isValidCoord(targetR, targetC)) {
-          this.attemptSwap(r, c, targetR, targetC);
-        }
-      }
+    window.addEventListener('mousemove', (e) => {
+      handleMove(e.clientX, e.clientY, e);
     });
 
-    candyEl.addEventListener('mouseup', () => {
-      if (!gestureActive || this.isProcessing) return;
-      gestureActive = false;
-      if (!isSwiping) {
-        this.handleCandyClick(r, c);
-      }
-    });
+    window.addEventListener('mouseup', () => handleEnd());
   }
 
-  handleCandyClick(r, c) {
+  /* ========================================================================
+     Tap-to-Swap / Select Handler
+     ======================================================================== */
+  handleTap(r, c) {
     this.sound.playPop();
-    this.resetIdleTimer();
-    this.clearHints();
 
-    if (!this.selectedCandy) {
-      this.selectedCandy = { r, c };
-      const el = document.getElementById(`candy-${r}-${c}`);
-      if (el) el.classList.add('selected');
+    if (!this.selectedCoord) {
+      this.selectedCoord = { r, c };
+      this.highlightSelected(r, c, true);
       return;
     }
 
-    const prevR = this.selectedCandy.r;
-    const prevC = this.selectedCandy.c;
+    const prevR = this.selectedCoord.r;
+    const prevC = this.selectedCoord.c;
 
-    // Clicked the same candy -> Deselect
     if (prevR === r && prevC === c) {
       this.clearSelection();
       return;
     }
 
-    // Check adjacency
     const dist = Math.abs(prevR - r) + Math.abs(prevC - c);
     if (dist === 1) {
       this.clearSelection();
       this.attemptSwap(prevR, prevC, r, c);
     } else {
-      // Pick new candy directly
       this.clearSelection();
-      this.selectedCandy = { r, c };
-      const el = document.getElementById(`candy-${r}-${c}`);
-      if (el) el.classList.add('selected');
+      this.selectedCoord = { r, c };
+      this.highlightSelected(r, c, true);
+    }
+  }
+
+  highlightSelected(r, c, active) {
+    const candy = this.grid[r][c];
+    if (candy) {
+      const el = document.getElementById(`candy-u${candy.uid}`);
+      if (el) {
+        if (active) el.classList.add('selected');
+        else el.classList.remove('selected');
+      }
     }
   }
 
   clearSelection() {
-    if (this.selectedCandy) {
-      const el = document.getElementById(`candy-${this.selectedCandy.r}-${this.selectedCandy.c}`);
-      if (el) el.classList.remove('selected');
-      this.selectedCandy = null;
+    if (this.selectedCoord) {
+      this.highlightSelected(this.selectedCoord.r, this.selectedCoord.c, false);
+      this.selectedCoord = null;
     }
   }
 
-  /* ------------------------------------------------------------------------
-     Swap & Match Processing Pipeline
-     ------------------------------------------------------------------------ */
+  /* ========================================================================
+     Swap & Match Pipeline
+     ======================================================================== */
+  async finishDragAndSwap(r1, c1, r2, c2) {
+    if (this.dragState) {
+      if (this.dragState.candyEl) {
+        this.dragState.candyEl.style.transform = '';
+        this.dragState.candyEl.style.zIndex = '';
+      }
+      if (this.dragState.neighborEl) {
+        this.dragState.neighborEl.style.transform = '';
+        this.dragState.neighborEl.style.zIndex = '';
+      }
+      this.dragState = null;
+    }
+    await this.attemptSwap(r1, c1, r2, c2);
+  }
+
   async attemptSwap(r1, c1, r2, c2) {
     this.isProcessing = true;
     this.clearHints();
     this.clearSelection();
     this.sound.playSwap();
 
-    // Animate visual swap
-    await this.animateSwapVisual(r1, c1, r2, c2);
+    // 1. Swap data in matrix
+    const candyA = this.grid[r1][c1];
+    const candyB = this.grid[r2][c2];
+    this.grid[r1][c1] = candyB;
+    this.grid[r2][c2] = candyA;
 
-    // Swap data
-    const temp = this.grid[r1][c1];
-    this.grid[r1][c1] = this.grid[r2][c2];
-    this.grid[r2][c2] = temp;
-    this.grid[r1][c1].r = r1;
-    this.grid[r1][c1].c = c1;
-    this.grid[r2][c2].r = r2;
-    this.grid[r2][c2].c = c2;
+    // 2. Animate DOM swap smoothly
+    await this.animateSwapVisual(candyA, candyB, r1, c1, r2, c2);
 
-    // Check Special Combos
-    const specialComboTriggered = await this.checkSpecialCandyCombos(r1, c1, r2, c2);
-
+    // 3. Check Special Combos
+    const specialComboTriggered = await this.checkSpecialCandyCombos(r1, c1, r2, c2, candyA, candyB);
     if (specialComboTriggered) {
       this.deductMove();
       await this.processBoardCascades();
@@ -987,74 +903,59 @@ class WalaaCrushGame {
       return;
     }
 
-    // Check Standard Matches
-    const matches = this.findMatches().matches;
-
-    if (matches.length > 0) {
+    // 4. Check Standard Matches (3, 4, 5)
+    const matchesResult = this.findMatches();
+    if (matchesResult.matches.length > 0) {
       this.deductMove();
       await this.processBoardCascades();
       this.checkLevelConditions();
     } else {
-      // Invalid swap: Revert!
+      // No match: Revert!
       this.sound.playInvalid();
-      await this.animateSwapVisual(r1, c1, r2, c2);
-      const revert = this.grid[r1][c1];
-      this.grid[r1][c1] = this.grid[r2][c2];
-      this.grid[r2][c2] = revert;
-      this.grid[r1][c1].r = r1;
-      this.grid[r1][c1].c = c1;
-      this.grid[r2][c2].r = r2;
-      this.grid[r2][c2].c = c2;
+      this.grid[r1][c1] = candyA;
+      this.grid[r2][c2] = candyB;
+      await this.animateSwapVisual(candyB, candyA, r1, c1, r2, c2);
     }
 
     this.isProcessing = false;
     this.resetIdleTimer();
   }
 
-  async animateSwapVisual(r1, c1, r2, c2) {
-    const el1 = document.getElementById(`candy-${r1}-${c1}`);
-    const el2 = document.getElementById(`candy-${r2}-${c2}`);
-    if (!el1 || !el2) return;
+  async animateSwapVisual(candyA, candyB, r1, c1, r2, c2) {
+    const elA = document.getElementById(`candy-u${candyA.uid}`);
+    const elB = document.getElementById(`candy-u${candyB.uid}`);
+    if (!elA || !elB) {
+      this.syncAllDOMPositions(false);
+      return;
+    }
 
     const cellSize = this.dom.boardGrid.clientWidth / 8;
-    const top1 = `${r1 * cellSize + cellSize * 0.04}px`;
-    const left1 = `${c1 * cellSize + cellSize * 0.04}px`;
-    const top2 = `${r2 * cellSize + cellSize * 0.04}px`;
-    const left2 = `${c2 * cellSize + cellSize * 0.04}px`;
+    const posA = { top: r1 * cellSize + cellSize * 0.04, left: c1 * cellSize + cellSize * 0.04 };
+    const posB = { top: r2 * cellSize + cellSize * 0.04, left: c2 * cellSize + cellSize * 0.04 };
 
-    el1.style.transition = 'top 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), left 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
-    el2.style.transition = 'top 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), left 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
+    elA.style.transition = 'top 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), left 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
+    elB.style.transition = 'top 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), left 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
 
-    el1.style.top = top2;
-    el1.style.left = left2;
-    el2.style.top = top1;
-    el2.style.left = left1;
+    // Move to their new destination
+    elA.style.top = `${posB.top}px`;
+    elA.style.left = `${posB.left}px`;
+    elB.style.top = `${posA.top}px`;
+    elB.style.left = `${posA.left}px`;
 
     await this.wait(210);
 
-    el1.id = `candy-${r2}-${c2}`;
-    el1.dataset.r = r2;
-    el1.dataset.c = c2;
-
-    el2.id = `candy-${r1}-${c1}`;
-    el2.dataset.r = r1;
-    el2.dataset.c = c1;
-
-    el1.style.transition = '';
-    el2.style.transition = '';
+    elA.style.transition = '';
+    elB.style.transition = '';
   }
 
-  /* ------------------------------------------------------------------------
-     Special Candy Combinations
-     ------------------------------------------------------------------------ */
-  async checkSpecialCandyCombos(r1, c1, r2, c2) {
-    const cA = this.grid[r1][c1];
-    const cB = this.grid[r2][c2];
+  /* ========================================================================
+     Special Combinations Logic
+     ======================================================================== */
+  async checkSpecialCandyCombos(r1, c1, r2, c2, cA, cB) {
     if (!cA || !cB) return false;
-
     const cellSize = this.dom.boardGrid.clientWidth / 8;
 
-    // 1. Color Bomb + Color Bomb
+    // 1. Color Bomb + Color Bomb (Wipe Board)
     if (cA.special === 'color-bomb' && cB.special === 'color-bomb') {
       this.showToast('SUPER BOARD CLEAR! 🌟');
       this.sound.playExplosion();
@@ -1062,22 +963,30 @@ class WalaaCrushGame {
 
       for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
-          this.destroyCandy(r, c, 100);
+          this.destroyCandyAt(r, c, 100);
         }
       }
       await this.wait(350);
       return true;
     }
 
-    // 2. Color Bomb + Regular / Striped
+    // 2. Color Bomb + Any Other Candy
     if (cA.special === 'color-bomb' || cB.special === 'color-bomb') {
       const bomb = cA.special === 'color-bomb' ? cA : cB;
       const target = cA.special === 'color-bomb' ? cB : cA;
       const targetColor = target.type;
 
       this.sound.playLaser();
-      this.destroyCandy(bomb.r, bomb.c, 250);
+      // Destroy the bomb
+      for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+          if (this.grid[r][c]?.uid === bomb.uid) {
+            this.destroyCandyAt(r, c, 250);
+          }
+        }
+      }
 
+      // Collect matching color cells
       const matchingCells = [];
       for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
@@ -1090,28 +999,29 @@ class WalaaCrushGame {
       if (target.special && target.special.startsWith('striped')) {
         this.showToast('STRIPED RAINBOW SHOWER! 🌈');
         for (const cell of matchingCells) {
-          if (this.grid[cell.r][cell.c]) {
-            this.grid[cell.r][cell.c].special = Math.random() > 0.5 ? 'striped-h' : 'striped-v';
-            const el = document.getElementById(`candy-${cell.r}-${cell.c}`);
-            if (el) el.classList.add(this.grid[cell.r][cell.c].special === 'striped-h' ? 'striped-horizontal' : 'striped-vertical');
+          const item = this.grid[cell.r][cell.c];
+          if (item) {
+            item.special = Math.random() > 0.5 ? 'striped-h' : 'striped-v';
+            const el = document.getElementById(`candy-u${item.uid}`);
+            if (el) el.classList.add(item.special === 'striped-h' ? 'striped-horizontal' : 'striped-vertical');
           }
         }
         await this.wait(200);
         for (const cell of matchingCells) {
           this.triggerSpecialCandy(cell.r, cell.c);
-          this.destroyCandy(cell.r, cell.c, 150);
+          this.destroyCandyAt(cell.r, cell.c, 150);
         }
       } else {
-        this.showToast(`COLOR SPLASH! 💖`);
+        this.showToast('COLOR SPLASH! 💖');
         for (const cell of matchingCells) {
-          this.destroyCandy(cell.r, cell.c, 120);
+          this.destroyCandyAt(cell.r, cell.c, 120);
         }
       }
       await this.wait(350);
       return true;
     }
 
-    // 3. Striped + Wrapped
+    // 3. Striped + Wrapped (3-row x 3-col Mega Cross)
     if ((cA.special?.startsWith('striped') && cB.special === 'wrapped') ||
         (cB.special?.startsWith('striped') && cA.special === 'wrapped')) {
       this.showToast('MEGA CROSS BLAST! 💥');
@@ -1131,7 +1041,7 @@ class WalaaCrushGame {
       for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
           if (Math.abs(r - centerR) <= 1 || Math.abs(c - centerC) <= 1) {
-            this.destroyCandy(r, c, 80);
+            this.destroyCandyAt(r, c, 80);
           }
         }
       }
@@ -1139,21 +1049,21 @@ class WalaaCrushGame {
       return true;
     }
 
-    // 4. Striped + Striped
+    // 4. Striped + Striped (Cross Laser)
     if (cA.special?.startsWith('striped') && cB.special?.startsWith('striped')) {
       this.showToast('CROSS LASER! ⚡');
       this.sound.playLaser();
       this.particles.createBeam('horizontal', r2, cellSize);
       this.particles.createBeam('vertical', c2, cellSize);
 
-      for (let c = 0; c < this.cols; c++) this.destroyCandy(r2, c, 60);
-      for (let r = 0; r < this.rows; r++) this.destroyCandy(r, c2, 60);
+      for (let c = 0; c < this.cols; c++) this.destroyCandyAt(r2, c, 60);
+      for (let r = 0; r < this.rows; r++) this.destroyCandyAt(r, c2, 60);
 
       await this.wait(300);
       return true;
     }
 
-    // 5. Wrapped + Wrapped
+    // 5. Wrapped + Wrapped (5x5 Explosion)
     if (cA.special === 'wrapped' && cB.special === 'wrapped') {
       this.showToast('DOUBLE LOVE BOMB! 💣');
       this.sound.playExplosion();
@@ -1161,7 +1071,7 @@ class WalaaCrushGame {
 
       for (let r = r2 - 2; r <= r2 + 2; r++) {
         for (let c = c2 - 2; c <= c2 + 2; c++) {
-          if (this.isValidCoord(r, c)) this.destroyCandy(r, c, 90);
+          if (this.isValidCoord(r, c)) this.destroyCandyAt(r, c, 90);
         }
       }
       await this.wait(350);
@@ -1171,36 +1081,41 @@ class WalaaCrushGame {
     return false;
   }
 
-  /* ------------------------------------------------------------------------
-     Match Finder
-     ------------------------------------------------------------------------ */
+  /* ========================================================================
+     Standard Match-3 Match Finder (Horizontal, Vertical, Special Creation)
+     ======================================================================== */
   findMatches() {
     const matchedCoords = new Set();
     const specialCreations = [];
 
-    // Horizontal matches
+    // Horizontal Matches
     for (let r = 0; r < this.rows; r++) {
       let runLength = 1;
       for (let c = 1; c <= this.cols; c++) {
         const curr = c < this.cols ? this.grid[r][c] : null;
         const prev = this.grid[r][c - 1];
 
-        if (curr && prev && curr.type === prev.type && curr.special !== 'color-bomb') {
+        const match = curr && prev &&
+                      curr.type === prev.type &&
+                      curr.special !== 'color-bomb' &&
+                      prev.special !== 'color-bomb';
+
+        if (match) {
           runLength++;
         } else {
           if (runLength >= 3) {
             const startC = c - runLength;
-            const matchCells = [];
+            const cells = [];
             for (let i = startC; i < c; i++) {
               matchedCoords.add(`${r},${i}`);
-              matchCells.push({ r, c: i });
+              cells.push({ r, c: i });
             }
 
             if (runLength >= 5) {
-              const mid = matchCells[Math.floor(matchCells.length / 2)];
+              const mid = cells[Math.floor(cells.length / 2)];
               specialCreations.push({ r: mid.r, c: mid.c, type: prev.type, special: 'color-bomb' });
             } else if (runLength === 4) {
-              const mid = matchCells[1];
+              const mid = cells[1];
               specialCreations.push({ r: mid.r, c: mid.c, type: prev.type, special: 'striped-v' });
             }
           }
@@ -1209,29 +1124,34 @@ class WalaaCrushGame {
       }
     }
 
-    // Vertical matches
+    // Vertical Matches
     for (let c = 0; c < this.cols; c++) {
       let runLength = 1;
       for (let r = 1; r <= this.rows; r++) {
         const curr = r < this.rows ? this.grid[r][c] : null;
         const prev = this.grid[r - 1][c];
 
-        if (curr && prev && curr.type === prev.type && curr.special !== 'color-bomb') {
+        const match = curr && prev &&
+                      curr.type === prev.type &&
+                      curr.special !== 'color-bomb' &&
+                      prev.special !== 'color-bomb';
+
+        if (match) {
           runLength++;
         } else {
           if (runLength >= 3) {
             const startR = r - runLength;
-            const matchCells = [];
+            const cells = [];
             for (let i = startR; i < r; i++) {
               matchedCoords.add(`${i},${c}`);
-              matchCells.push({ r, c });
+              cells.push({ r: i, c });
             }
 
             if (runLength >= 5) {
-              const mid = matchCells[Math.floor(matchCells.length / 2)];
+              const mid = cells[Math.floor(cells.length / 2)];
               specialCreations.push({ r: mid.r, c: mid.c, type: prev.type, special: 'color-bomb' });
             } else if (runLength === 4) {
-              const mid = matchCells[1];
+              const mid = cells[1];
               specialCreations.push({ r: mid.r, c: mid.c, type: prev.type, special: 'striped-h' });
             }
           }
@@ -1240,23 +1160,22 @@ class WalaaCrushGame {
       }
     }
 
-    const matchesArray = Array.from(matchedCoords).map(str => {
-      const [r, c] = str.split(',').map(Number);
+    const matches = Array.from(matchedCoords).map(coord => {
+      const [r, c] = coord.split(',').map(Number);
       return { r, c };
     });
 
-    return { matches: matchesArray, specialCreations };
+    return { matches, specialCreations };
   }
 
-  /* ------------------------------------------------------------------------
-     Board Cascades Pipeline
-     ------------------------------------------------------------------------ */
+  /* ========================================================================
+     Cascades, Gravity & Board Refill
+     ======================================================================== */
   async processBoardCascades() {
     let combo = 0;
 
     while (true) {
-      const matchResult = this.findMatches();
-      const matches = matchResult.matches;
+      const { matches, specialCreations } = this.findMatches();
       if (matches.length === 0) break;
 
       combo++;
@@ -1267,7 +1186,7 @@ class WalaaCrushGame {
         this.showToast(msg);
       }
 
-      // 1. Trigger specials
+      // 1. Trigger specials on matching tiles
       for (const m of matches) {
         this.triggerSpecialCandy(m.r, m.c);
       }
@@ -1284,38 +1203,37 @@ class WalaaCrushGame {
 
       // 3. Destroy matched candies
       for (const m of matches) {
-        const candy = this.grid[m.r][m.c];
-        if (candy && candy.type === 'strawberry') {
+        const item = this.grid[m.r][m.c];
+        if (item && item.type === 'strawberry') {
           this.collectedHearts++;
         }
-        this.destroyCandy(m.r, m.c, 60 * combo);
+        this.destroyCandyAt(m.r, m.c, 60 * combo);
       }
 
-      // 4. Place specials
-      for (const spec of matchResult.specialCreations) {
+      // 4. Place special candies
+      for (const spec of specialCreations) {
         this.createdSpecials++;
-        this.grid[spec.r][spec.c] = {
-          r: spec.r,
-          c: spec.c,
-          type: spec.type,
-          special: spec.special
-        };
-        const el = this.createCandyElement(this.grid[spec.r][spec.c], spec.r, spec.c);
+        const newSpecial = this.createCandyObject(spec.type, spec.special);
+        this.grid[spec.r][spec.c] = newSpecial;
+
+        const el = this.createCandyDOMElement(newSpecial);
         this.dom.boardGrid.appendChild(el);
+
+        const cellSize = this.dom.boardGrid.clientWidth / 8;
         this.particles.createShockwave(
-          spec.c * (this.dom.boardGrid.clientWidth / 8) + 25,
-          spec.r * (this.dom.boardGrid.clientWidth / 8) + 25,
+          spec.c * cellSize + cellSize / 2,
+          spec.r * cellSize + cellSize / 2,
           '#ffd700'
         );
         this.sound.playSpecial();
       }
 
-      await this.wait(240);
+      await this.wait(220);
 
-      // 5. Gravity
+      // 5. Gravity drop
       await this.applyGravity();
 
-      // 6. Refill
+      // 6. Refill empty cells
       await this.refillEmptyCells();
 
       await this.wait(180);
@@ -1335,27 +1253,27 @@ class WalaaCrushGame {
     if (candy.special === 'striped-h') {
       this.sound.playLaser();
       this.particles.createBeam('horizontal', r, cellSize);
-      for (let col = 0; col < this.cols; col++) this.destroyCandy(r, col, 50);
+      for (let col = 0; col < this.cols; col++) this.destroyCandyAt(r, col, 50);
     } else if (candy.special === 'striped-v') {
       this.sound.playLaser();
       this.particles.createBeam('vertical', c, cellSize);
-      for (let row = 0; row < this.rows; row++) this.destroyCandy(row, c, 50);
+      for (let row = 0; row < this.rows; row++) this.destroyCandyAt(row, c, 50);
     } else if (candy.special === 'wrapped') {
       this.sound.playExplosion();
       this.particles.createShockwave(c * cellSize + cellSize / 2, r * cellSize + cellSize / 2, '#ff4081');
       for (let row = r - 1; row <= r + 1; row++) {
         for (let col = c - 1; col <= c + 1; col++) {
-          if (this.isValidCoord(row, col)) this.destroyCandy(row, col, 80);
+          if (this.isValidCoord(row, col)) this.destroyCandyAt(row, col, 80);
         }
       }
     }
   }
 
-  destroyCandy(r, c, points = 60) {
+  destroyCandyAt(r, c, points = 60) {
     const candy = this.grid[r][c];
     if (!candy) return;
 
-    const el = document.getElementById(`candy-${r}-${c}`);
+    const el = document.getElementById(`candy-u${candy.uid}`);
     if (el) {
       const rect = el.getBoundingClientRect();
       const parentRect = this.dom.boardGrid.getBoundingClientRect();
@@ -1372,9 +1290,6 @@ class WalaaCrushGame {
     this.chargeLoveMeter(points);
   }
 
-  /* ------------------------------------------------------------------------
-     Gravity & Refilling
-     ------------------------------------------------------------------------ */
   async applyGravity() {
     const cellSize = this.dom.boardGrid.clientWidth / 8;
     let anyDropped = false;
@@ -1388,13 +1303,9 @@ class WalaaCrushGame {
             anyDropped = true;
             this.grid[emptyRow][c] = this.grid[r][c];
             this.grid[r][c] = null;
-            this.grid[emptyRow][c].r = emptyRow;
-            this.grid[emptyRow][c].c = c;
 
-            const el = document.getElementById(`candy-${r}-${c}`);
+            const el = document.getElementById(`candy-u${this.grid[emptyRow][c].uid}`);
             if (el) {
-              el.id = `candy-${emptyRow}-${c}`;
-              el.dataset.r = emptyRow;
               el.style.transition = 'top 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)';
               el.style.top = `${emptyRow * cellSize + cellSize * 0.04}px`;
             }
@@ -1416,13 +1327,10 @@ class WalaaCrushGame {
         if (this.grid[r][c] === null) {
           spawnCount++;
           const randomType = CANDY_TYPES[Math.floor(Math.random() * CANDY_TYPES.length)].id;
-          this.grid[r][c] = {
-            r, c,
-            type: randomType,
-            special: null
-          };
+          const candy = this.createCandyObject(randomType, null);
+          this.grid[r][c] = candy;
 
-          const el = this.createCandyElement(this.grid[r][c], r, c);
+          const el = this.createCandyDOMElement(candy);
           el.style.width = `${cellSize * 0.92}px`;
           el.style.height = `${cellSize * 0.92}px`;
           el.style.left = `${c * cellSize + cellSize * 0.04}px`;
@@ -1439,9 +1347,9 @@ class WalaaCrushGame {
     await this.wait(290);
   }
 
-  /* ------------------------------------------------------------------------
-     Move Detection & Board Reshuffling
-     ------------------------------------------------------------------------ */
+  /* ========================================================================
+     Move Validation & Board Reshuffling
+     ======================================================================== */
   hasPossibleMoves() {
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
@@ -1490,11 +1398,7 @@ class WalaaCrushGame {
       let idx = 0;
       for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
-          this.grid[r][c] = {
-            r, c,
-            type: candyPool[idx].type,
-            special: candyPool[idx].special
-          };
+          this.grid[r][c] = this.createCandyObject(candyPool[idx].type, candyPool[idx].special);
           idx++;
         }
       }
@@ -1508,9 +1412,132 @@ class WalaaCrushGame {
     await this.wait(300);
   }
 
-  /* ------------------------------------------------------------------------
-     Hint System
-     ------------------------------------------------------------------------ */
+  /* ========================================================================
+     DOM Rendering & Synchronizing
+     ======================================================================== */
+  renderBoardDOM() {
+    this.dom.boardGrid.innerHTML = '';
+
+    // Render tiles
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const tile = document.createElement('div');
+        tile.className = `cell-tile ${(r + c) % 2 === 0 ? 'tile-light' : 'tile-dark'}`;
+        if (this.jellyGrid[r][c]) tile.classList.add('has-jelly');
+        tile.dataset.r = r;
+        tile.dataset.c = c;
+        this.dom.boardGrid.appendChild(tile);
+
+        const candy = this.grid[r][c];
+        if (candy) {
+          const el = this.createCandyDOMElement(candy);
+          this.dom.boardGrid.appendChild(el);
+        }
+      }
+    }
+
+    this.syncAllDOMPositions(false);
+  }
+
+  createCandyDOMElement(candy) {
+    const el = document.createElement('div');
+    el.className = 'candy';
+    el.id = `candy-u${candy.uid}`;
+
+    if (candy.special === 'striped-h') el.classList.add('striped-horizontal');
+    if (candy.special === 'striped-v') el.classList.add('striped-vertical');
+    if (candy.special === 'wrapped') el.classList.add('wrapped');
+    if (candy.special === 'color-bomb') el.classList.add('color-bomb');
+
+    if (candy.special === 'color-bomb') {
+      el.innerHTML = SVG_ICONS.colorBomb;
+    } else {
+      el.innerHTML = SVG_ICONS[candy.type] || SVG_ICONS.strawberry;
+    }
+
+    return el;
+  }
+
+  syncAllDOMPositions(animated = false) {
+    const boardWidth = this.dom.boardGrid.clientWidth;
+    const cellSize = boardWidth / 8;
+
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const candy = this.grid[r][c];
+        if (candy) {
+          const el = document.getElementById(`candy-u${candy.uid}`);
+          if (el) {
+            el.style.width = `${cellSize * 0.92}px`;
+            el.style.height = `${cellSize * 0.92}px`;
+            el.style.transform = '';
+            el.style.transition = animated ? 'top 0.2s ease, left 0.2s ease' : '';
+            el.style.left = `${c * cellSize + cellSize * 0.04}px`;
+            el.style.top = `${r * cellSize + cellSize * 0.04}px`;
+          }
+        }
+      }
+    }
+  }
+
+  /* ========================================================================
+     Level Management & Life Cycle
+     ======================================================================== */
+  loadLevel(index) {
+    this.currentLevelIndex = index;
+    const lvl = LEVELS[index];
+
+    this.score = 0;
+    this.movesLeft = lvl.moves;
+    this.collectedHearts = 0;
+    this.createdSpecials = 0;
+    this.loveMeterVal = 0;
+    this.selectedCoord = null;
+    this.isProcessing = false;
+
+    // Jellies
+    this.jellyGrid = [];
+    for (let r = 0; r < this.rows; r++) {
+      this.jellyGrid[r] = [];
+      for (let c = 0; c < this.cols; c++) {
+        this.jellyGrid[r][c] = Boolean(lvl.jellies && r >= 2 && r <= 5 && c >= 2 && c <= 5);
+      }
+    }
+
+    this.updateHUD();
+    this.generateValidInitialBoard();
+    this.renderBoardDOM();
+    this.showBanner(lvl.title);
+    this.resetIdleTimer();
+  }
+
+  generateValidInitialBoard() {
+    let attempts = 0;
+    do {
+      attempts++;
+      this.grid = [];
+      for (let r = 0; r < this.rows; r++) {
+        this.grid[r] = [];
+        for (let c = 0; c < this.cols; c++) {
+          let forbidden = [];
+          if (c >= 2 && this.grid[r][c-1]?.type === this.grid[r][c-2]?.type) {
+            forbidden.push(this.grid[r][c-1].type);
+          }
+          if (r >= 2 && this.grid[r-1][c]?.type === this.grid[r-2][c]?.type) {
+            forbidden.push(this.grid[r-1][c].type);
+          }
+
+          const available = CANDY_TYPES.filter(t => !forbidden.includes(t.id));
+          const chosen = available[Math.floor(Math.random() * available.length)];
+          this.grid[r][c] = this.createCandyObject(chosen.id, null);
+        }
+      }
+    } while (!this.hasPossibleMoves() && attempts < 100);
+  }
+
+  /* ========================================================================
+     Hints & Assistant
+     ======================================================================== */
   showHint() {
     this.clearHints();
     for (let r = 0; r < this.rows; r++) {
@@ -1530,8 +1557,11 @@ class WalaaCrushGame {
   }
 
   highlightCandy(r, c) {
-    const el = document.getElementById(`candy-${r}-${c}`);
-    if (el) el.classList.add('hint');
+    const candy = this.grid[r][c];
+    if (candy) {
+      const el = document.getElementById(`candy-u${candy.uid}`);
+      if (el) el.classList.add('hint');
+    }
   }
 
   clearHints() {
@@ -1540,14 +1570,12 @@ class WalaaCrushGame {
 
   resetIdleTimer() {
     clearTimeout(this.idleTimer);
-    this.idleTimer = setTimeout(() => {
-      this.showHint();
-    }, 5000);
+    this.idleTimer = setTimeout(() => this.showHint(), 5000);
   }
 
-  /* ------------------------------------------------------------------------
-     Scoring, Love Meter, HUD & Star Ratings
-     ------------------------------------------------------------------------ */
+  /* ========================================================================
+     Scoring & HUD
+     ======================================================================== */
   addScore(pts) {
     this.score += pts;
     this.dom.scoreCount.textContent = this.score.toLocaleString();
@@ -1587,7 +1615,7 @@ class WalaaCrushGame {
       for (let c = 0; c < this.cols && placed < 2; c++) {
         if (this.grid[r][c] && !this.grid[r][c].special) {
           this.grid[r][c].special = 'color-bomb';
-          const el = document.getElementById(`candy-${r}-${c}`);
+          const el = document.getElementById(`candy-u${this.grid[r][c].uid}`);
           if (el) {
             el.className = 'candy color-bomb';
             el.innerHTML = SVG_ICONS.colorBomb;
@@ -1621,9 +1649,9 @@ class WalaaCrushGame {
     this.dom.loveMeterText.textContent = '0%';
   }
 
-  /* ------------------------------------------------------------------------
-     Level Objectives & Win / Loss
-     ------------------------------------------------------------------------ */
+  /* ========================================================================
+     Win / Game Over Handling
+     ======================================================================== */
   checkLevelConditions() {
     const lvl = LEVELS[this.currentLevelIndex];
 
@@ -1674,9 +1702,6 @@ class WalaaCrushGame {
     this.openModal(this.dom.modalGameOver);
   }
 
-  /* ------------------------------------------------------------------------
-     Level Selector Modal
-     ------------------------------------------------------------------------ */
   renderLevelSelector() {
     this.dom.levelSelectorGrid.innerHTML = '';
     const maxUnlocked = parseInt(localStorage.getItem('walaa_max_level') || '0', 10);
@@ -1710,9 +1735,6 @@ class WalaaCrushGame {
     });
   }
 
-  /* ------------------------------------------------------------------------
-     Toasts & Board Banners
-     ------------------------------------------------------------------------ */
   showToast(msg) {
     const toast = document.createElement('div');
     toast.className = 'toast-msg';
@@ -1724,14 +1746,9 @@ class WalaaCrushGame {
   showBanner(msg) {
     this.dom.boardBanner.textContent = msg;
     this.dom.boardBanner.classList.add('show');
-    setTimeout(() => {
-      this.dom.boardBanner.classList.remove('show');
-    }, 1400);
+    setTimeout(() => this.dom.boardBanner.classList.remove('show'), 1400);
   }
 
-  /* ------------------------------------------------------------------------
-     Helper Utilities
-     ------------------------------------------------------------------------ */
   isValidCoord(r, c) {
     return r >= 0 && r < this.rows && c >= 0 && c < this.cols;
   }
@@ -1741,7 +1758,6 @@ class WalaaCrushGame {
   }
 }
 
-// Start Game when DOM is Ready
 window.addEventListener('DOMContentLoaded', () => {
   window.walaaGame = new WalaaCrushGame();
 });
