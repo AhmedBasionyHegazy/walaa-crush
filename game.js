@@ -1,5 +1,5 @@
 /**
- * Walaa's Sweet Crush - Complete Match-3 Game Engine
+ * Walaa's Sweet Crush - Complete Mobile-First Match-3 Game Engine
  * Handcrafted with love for Walaa ❤️
  */
 
@@ -24,13 +24,9 @@ const SVG_ICONS = {
           <stop offset="45%" stop-color="#ff1744" />
           <stop offset="100%" stop-color="#b71c1c" />
         </radialGradient>
-        <filter id="glow-straw" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#880e4f" flood-opacity="0.3"/>
-        </filter>
       </defs>
       <path d="M50 88 C20 68 8 50 8 32 C8 16 20 8 34 8 C42 8 47 13 50 18 C53 13 58 8 66 8 C80 8 92 16 92 32 C92 50 80 68 50 88 Z"
-            fill="url(#grad-straw)" filter="url(#glow-straw)" />
-      <!-- Sweet shine highlight -->
+            fill="url(#grad-straw)" />
       <ellipse cx="32" cy="24" rx="10" ry="6" transform="rotate(-30 32 24)" fill="rgba(255,255,255,0.75)"/>
       <circle cx="24" cy="36" r="3" fill="rgba(255,255,255,0.5)"/>
       <circle cx="68" cy="30" r="4" fill="rgba(255,255,255,0.4)"/>
@@ -46,7 +42,6 @@ const SVG_ICONS = {
         </radialGradient>
       </defs>
       <path d="M50 8 C72 8 88 28 88 52 C88 74 70 90 50 90 C30 90 12 74 12 52 C12 28 28 8 50 8 Z" fill="url(#grad-lemon)"/>
-      <!-- Lemon candy drop slice -->
       <circle cx="50" cy="52" r="30" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="4" stroke-dasharray="8 6"/>
       <ellipse cx="36" cy="30" rx="12" ry="7" transform="rotate(-25 36 30)" fill="rgba(255,255,255,0.8)"/>
       <circle cx="30" cy="44" r="3" fill="rgba(255,255,255,0.6)"/>
@@ -61,7 +56,6 @@ const SVG_ICONS = {
           <stop offset="100%" stop-color="#e65100" />
         </radialGradient>
       </defs>
-      <!-- Star Candy with rounded soft corners -->
       <path d="M50 10 L62 34 L88 38 L69 56 L73 82 L50 70 L27 82 L31 56 L12 38 L38 34 Z"
             fill="url(#grad-orange)" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
       <ellipse cx="44" cy="32" rx="9" ry="5" transform="rotate(-20 44 32)" fill="rgba(255,255,255,0.75)"/>
@@ -77,7 +71,6 @@ const SVG_ICONS = {
           <stop offset="100%" stop-color="#007e33" />
         </radialGradient>
       </defs>
-      <!-- Hexagonal faceted sweet gem -->
       <polygon points="50,8 86,28 86,72 50,92 14,72 14,28" fill="url(#grad-mint)"/>
       <polygon points="50,22 74,36 74,64 50,78 26,64 26,36" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
       <ellipse cx="38" cy="28" rx="8" ry="4" transform="rotate(-15 38 28)" fill="rgba(255,255,255,0.85)"/>
@@ -92,7 +85,6 @@ const SVG_ICONS = {
           <stop offset="100%" stop-color="#01579b" />
         </radialGradient>
       </defs>
-      <!-- Brilliant Diamond Candy -->
       <polygon points="50,10 88,50 50,90 12,50" fill="url(#grad-berry)"/>
       <polyline points="28,50 50,28 72,50 50,72 28,50" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="3"/>
       <ellipse cx="42" cy="32" rx="10" ry="5" transform="rotate(-35 42 32)" fill="rgba(255,255,255,0.85)"/>
@@ -107,7 +99,6 @@ const SVG_ICONS = {
           <stop offset="100%" stop-color="#4a148c" />
         </radialGradient>
       </defs>
-      <!-- Royal Round Candy with Candy Wrapper Ears -->
       <path d="M12 50 L2 35 L2 65 Z" fill="#d500f9" opacity="0.8"/>
       <path d="M88 50 L98 35 L98 65 Z" fill="#d500f9" opacity="0.8"/>
       <circle cx="50" cy="50" r="38" fill="url(#grad-plum)"/>
@@ -125,13 +116,11 @@ const SVG_ICONS = {
         </radialGradient>
       </defs>
       <circle cx="50" cy="50" r="42" fill="url(#grad-bomb)" stroke="#ffd700" stroke-width="4"/>
-      <!-- Rainbow Sprinkles -->
       <rect x="30" y="24" width="7" height="4" rx="2" fill="#ff1744" transform="rotate(25 30 24)"/>
       <rect x="62" y="28" width="7" height="4" rx="2" fill="#00e676" transform="rotate(-35 62 28)"/>
       <rect x="70" y="55" width="7" height="4" rx="2" fill="#ffd600" transform="rotate(45 70 55)"/>
       <rect x="45" y="72" width="7" height="4" rx="2" fill="#00b0ff" transform="rotate(15 45 72)"/>
       <rect x="22" y="55" width="7" height="4" rx="2" fill="#d500f9" transform="rotate(-20 22 55)"/>
-      <!-- Crown Heart for Walaa -->
       <path d="M50 48 C42 40 36 44 36 50 C36 56 50 64 50 64 C50 64 64 56 64 50 C64 44 58 40 50 48 Z" fill="#ff4081"/>
       <text x="50" y="42" font-size="14" text-anchor="middle" fill="#ffd700">👑</text>
     </svg>
@@ -139,7 +128,7 @@ const SVG_ICONS = {
 };
 
 /* ==========================================================================
-   2. Web Audio API Synthesizer (No external sound files required)
+   2. Web Audio API Synthesizer (With Mobile Autoplay Support)
    ========================================================================== */
 class SoundEngine {
   constructor() {
@@ -155,6 +144,12 @@ class SoundEngine {
     }
   }
 
+  resumeAudio() {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     localStorage.setItem('walaa_sound_muted', this.muted);
@@ -165,7 +160,7 @@ class SoundEngine {
     if (this.muted) return;
     try {
       this.initContext();
-      if (this.ctx.state === 'suspended') this.ctx.resume();
+      this.resumeAudio();
 
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -201,67 +196,64 @@ class SoundEngine {
 
   playMatch(combo = 1) {
     if (this.muted) return;
-    // Ascending pentatonic melodies based on cascading combo
     const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
     const baseIndex = Math.min(notes.length - 2, combo - 1);
     const n1 = notes[baseIndex];
     const n2 = notes[baseIndex + 1];
 
-    this.playTone(n1, 'sine', 0.2, 0.22, false);
-    setTimeout(() => this.playTone(n2, 'triangle', 0.25, 0.25, false), 70);
+    this.playTone(n1, 'sine', 0.18, 0.22, false);
+    setTimeout(() => this.playTone(n2, 'triangle', 0.22, 0.25, false), 60);
   }
 
   playSpecial() {
     if (this.muted) return;
-    // Sparkling arpeggio
     [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-      setTimeout(() => this.playTone(freq, 'sine', 0.18, 0.2, false), idx * 50);
+      setTimeout(() => this.playTone(freq, 'sine', 0.16, 0.2, false), idx * 45);
     });
   }
 
   playExplosion() {
     if (this.muted) return;
-    this.playTone(120, 'sawtooth', 0.45, 0.35, true);
+    this.playTone(120, 'sawtooth', 0.4, 0.35, true);
   }
 
   playLaser() {
     if (this.muted) return;
     try {
       this.initContext();
-      if (this.ctx.state === 'suspended') this.ctx.resume();
+      this.resumeAudio();
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(1400, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+      osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.28);
+      gain.gain.setValueAtTime(0.28, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.28);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.3);
+      osc.stop(this.ctx.currentTime + 0.28);
     } catch(e) {}
   }
 
   playWinFanfare() {
     if (this.muted) return;
-    // Sweet celebratory love melody
     const winNotes = [
-      { f: 523.25, d: 0.15 },
-      { f: 659.25, d: 0.15 },
-      { f: 783.99, d: 0.18 },
-      { f: 1046.50, d: 0.45 }
+      { f: 523.25, d: 0.14 },
+      { f: 659.25, d: 0.14 },
+      { f: 783.99, d: 0.16 },
+      { f: 1046.50, d: 0.4 }
     ];
     let time = 0;
     winNotes.forEach(n => {
       setTimeout(() => this.playTone(n.f, 'triangle', n.d, 0.3, false), time);
-      time += 130;
+      time += 120;
     });
   }
 }
 
 /* ==========================================================================
-   3. Particle & Laser Canvas Effects System
+   3. Particle & Laser Canvas Effects System (HiDPI Retina Ready)
    ========================================================================== */
 class ParticleEngine {
   constructor(canvas) {
@@ -270,45 +262,49 @@ class ParticleEngine {
     this.particles = [];
     this.beams = [];
     this.running = false;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
     this.resize();
     window.addEventListener('resize', () => this.resize());
   }
 
   resize() {
     const rect = this.canvas.parentElement.getBoundingClientRect();
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.height;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = rect.width * this.dpr;
+    this.canvas.height = rect.height * this.dpr;
+    this.canvas.style.width = `${rect.width}px`;
+    this.canvas.style.height = `${rect.height}px`;
+    this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
   }
 
-  createBurst(x, y, color = '#ff4081', count = 14) {
+  createBurst(x, y, color = '#ff4081', count = 12) {
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 6;
+      const speed = 2 + Math.random() * 5;
       const isHeart = Math.random() > 0.6;
       this.particles.push({
         x, y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        size: 4 + Math.random() * 7,
+        size: 4 + Math.random() * 6,
         color,
         isHeart,
         alpha: 1,
-        life: 0.02 + Math.random() * 0.03,
+        life: 0.025 + Math.random() * 0.035,
         rotation: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 10
+        rotSpeed: (Math.random() - 0.5) * 8
       });
     }
     this.startLoop();
   }
 
   createBeam(type, index, cellSize) {
-    // type: 'horizontal' or 'vertical'
     this.beams.push({
       type,
       index,
       cellSize,
       alpha: 1,
-      width: cellSize * 1.2
+      width: cellSize * 1.1
     });
     this.startLoop();
   }
@@ -318,7 +314,7 @@ class ParticleEngine {
       type: 'shockwave',
       x, y,
       radius: 5,
-      maxRadius: 100,
+      maxRadius: 90,
       color,
       alpha: 1
     });
@@ -333,7 +329,9 @@ class ParticleEngine {
   }
 
   update() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const logicalW = this.canvas.width / this.dpr;
+    const logicalH = this.canvas.height / this.dpr;
+    this.ctx.clearRect(0, 0, logicalW, logicalH);
 
     // 1. Draw Lasers / Beams
     for (let i = this.beams.length - 1; i >= 0; i--) {
@@ -342,19 +340,19 @@ class ParticleEngine {
       this.ctx.globalAlpha = b.alpha;
       this.ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
       this.ctx.shadowColor = '#ff4081';
-      this.ctx.shadowBlur = 24;
+      this.ctx.shadowBlur = 18;
 
       if (b.type === 'horizontal') {
         const y = b.index * b.cellSize + b.cellSize / 2;
-        this.ctx.fillRect(0, y - b.width / 2, this.canvas.width, b.width);
+        this.ctx.fillRect(0, y - b.width / 2, logicalW, b.width);
       } else {
         const x = b.index * b.cellSize + b.cellSize / 2;
-        this.ctx.fillRect(x - b.width / 2, 0, b.width, this.canvas.height);
+        this.ctx.fillRect(x - b.width / 2, 0, b.width, logicalH);
       }
       this.ctx.restore();
 
-      b.alpha -= 0.07;
-      b.width *= 0.9;
+      b.alpha -= 0.08;
+      b.width *= 0.92;
       if (b.alpha <= 0) this.beams.splice(i, 1);
     }
 
@@ -367,22 +365,20 @@ class ParticleEngine {
         this.ctx.beginPath();
         this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         this.ctx.strokeStyle = p.color;
-        this.ctx.lineWidth = 6;
+        this.ctx.lineWidth = 5;
         this.ctx.globalAlpha = p.alpha;
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 15;
         this.ctx.stroke();
         this.ctx.restore();
 
-        p.radius += 6;
-        p.alpha -= 0.05;
+        p.radius += 5;
+        p.alpha -= 0.06;
         if (p.alpha <= 0) this.particles.splice(i, 1);
         continue;
       }
 
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.15; // gentle gravity
+      p.vy += 0.12;
       p.alpha -= p.life;
       p.rotation += p.rotSpeed;
 
@@ -398,7 +394,7 @@ class ParticleEngine {
 
       if (p.isHeart) {
         this.ctx.fillStyle = p.color;
-        this.ctx.font = `${p.size * 1.8}px serif`;
+        this.ctx.font = `${p.size * 1.7}px serif`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText('❤️', 0, 0);
@@ -406,8 +402,6 @@ class ParticleEngine {
         this.ctx.beginPath();
         this.ctx.arc(0, 0, p.size, 0, Math.PI * 2);
         this.ctx.fillStyle = p.color;
-        this.ctx.shadowColor = p.color;
-        this.ctx.shadowBlur = 8;
         this.ctx.fill();
       }
       this.ctx.restore();
@@ -442,7 +436,7 @@ const LEVELS = [
     shortName: 'Romance',
     moves: 18,
     targetScore: 3500,
-    targetHearts: 16, // match red strawberry hearts
+    targetHearts: 16,
     jellies: false,
     stars: [1500, 2500, 3500],
     desc: 'Collect 16 Strawberry Hearts for Walaa 🍓'
@@ -454,7 +448,7 @@ const LEVELS = [
     moves: 16,
     targetScore: 4500,
     targetHearts: 0,
-    jellies: true, // clear sweet frosted jelly tiles
+    jellies: true,
     stars: [2000, 3500, 4500],
     desc: 'Clear all 16 sweet frosted jelly tiles! 🍮'
   },
@@ -466,7 +460,7 @@ const LEVELS = [
     targetScore: 6500,
     targetHearts: 0,
     jellies: false,
-    specialTarget: 3, // create 3 special candies
+    specialTarget: 3,
     stars: [3000, 5000, 6500],
     desc: 'Score 6,500 pts & create 3 special candies! ✨'
   },
@@ -513,8 +507,8 @@ class WalaaCrushGame {
   constructor() {
     this.rows = 8;
     this.cols = 8;
-    this.grid = [];      // 8x8 matrix of candy objects
-    this.jellyGrid = []; // 8x8 matrix of boolean jelly presence
+    this.grid = [];
+    this.jellyGrid = [];
     this.selectedCandy = null;
     this.isProcessing = false;
     this.currentLevelIndex = 0;
@@ -559,8 +553,24 @@ class WalaaCrushGame {
     };
 
     this.initBackgroundHearts();
+    this.initGlobalTouchUnlock();
     this.initEvents();
     this.loadLevel(0);
+  }
+
+  /* ------------------------------------------------------------------------
+     Mobile Audio Unlocking on First Gesture
+     ------------------------------------------------------------------------ */
+  initGlobalTouchUnlock() {
+    const unlock = () => {
+      this.sound.resumeAudio();
+      window.removeEventListener('touchstart', unlock, true);
+      window.removeEventListener('pointerdown', unlock, true);
+      window.removeEventListener('click', unlock, true);
+    };
+    window.addEventListener('touchstart', unlock, true);
+    window.addEventListener('pointerdown', unlock, true);
+    window.addEventListener('click', unlock, true);
   }
 
   /* ------------------------------------------------------------------------
@@ -570,14 +580,14 @@ class WalaaCrushGame {
     const container = document.getElementById('hearts-bg');
     if (!container) return;
     const heartIcons = ['💖', '💕', '🍬', '✨', '🌸', '❤️'];
-    for (let i = 0; i < 22; i++) {
+    for (let i = 0; i < 18; i++) {
       const el = document.createElement('div');
       el.className = 'floating-heart';
       el.textContent = heartIcons[Math.floor(Math.random() * heartIcons.length)];
       el.style.left = `${Math.random() * 100}vw`;
-      el.style.animationDuration = `${8 + Math.random() * 14}s`;
-      el.style.animationDelay = `${Math.random() * 10}s`;
-      el.style.fontSize = `${1 + Math.random() * 1.5}rem`;
+      el.style.animationDuration = `${9 + Math.random() * 12}s`;
+      el.style.animationDelay = `${Math.random() * 8}s`;
+      el.style.fontSize = `${1 + Math.random() * 1.2}rem`;
       container.appendChild(el);
     }
   }
@@ -647,6 +657,12 @@ class WalaaCrushGame {
       this.particles.resize();
       this.renderGridVisuals();
     });
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        this.particles.resize();
+        this.renderGridVisuals();
+      }, 150);
+    });
   }
 
   openModal(modalEl) {
@@ -677,7 +693,6 @@ class WalaaCrushGame {
     for (let r = 0; r < this.rows; r++) {
       this.jellyGrid[r] = [];
       for (let c = 0; c < this.cols; c++) {
-        // Center 4x4 area has jellies if enabled
         if (lvl.jellies && r >= 2 && r <= 5 && c >= 2 && c <= 5) {
           this.jellyGrid[r][c] = true;
         } else {
@@ -694,7 +709,7 @@ class WalaaCrushGame {
   }
 
   /* ------------------------------------------------------------------------
-     Board Generation (Guaranteed Solvable & No Initial Matches)
+     Board Generation
      ------------------------------------------------------------------------ */
   generateValidInitialBoard() {
     let attempts = 0;
@@ -704,7 +719,6 @@ class WalaaCrushGame {
       for (let r = 0; r < this.rows; r++) {
         this.grid[r] = [];
         for (let c = 0; c < this.cols; c++) {
-          // Avoid creating initial 3-matches
           let forbidden = [];
           if (c >= 2 && this.grid[r][c-1]?.type === this.grid[r][c-2]?.type) {
             forbidden.push(this.grid[r][c-1].type);
@@ -719,7 +733,7 @@ class WalaaCrushGame {
           this.grid[r][c] = {
             r, c,
             type: chosen.id,
-            special: null // null | 'striped-h' | 'striped-v' | 'wrapped' | 'color-bomb'
+            special: null
           };
         }
       }
@@ -727,25 +741,20 @@ class WalaaCrushGame {
   }
 
   /* ------------------------------------------------------------------------
-     DOM Rendering for Grid & Tiles
+     DOM Rendering
      ------------------------------------------------------------------------ */
   renderBoardDOM() {
     this.dom.boardGrid.innerHTML = '';
-    const cellSize = this.dom.boardGrid.clientWidth / 8;
 
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
-        // Tile cell background
         const tile = document.createElement('div');
         tile.className = `cell-tile ${(r + c) % 2 === 0 ? 'tile-light' : 'tile-dark'}`;
-        if (this.jellyGrid[r][c]) {
-          tile.classList.add('has-jelly');
-        }
+        if (this.jellyGrid[r][c]) tile.classList.add('has-jelly');
         tile.dataset.r = r;
         tile.dataset.c = c;
         this.dom.boardGrid.appendChild(tile);
 
-        // Candy element
         const candyData = this.grid[r][c];
         if (candyData) {
           const candyEl = this.createCandyElement(candyData, r, c);
@@ -768,14 +777,12 @@ class WalaaCrushGame {
     if (candy.special === 'wrapped') el.classList.add('wrapped');
     if (candy.special === 'color-bomb') el.classList.add('color-bomb');
 
-    // Insert SVG icon
     if (candy.special === 'color-bomb') {
       el.innerHTML = SVG_ICONS.colorBomb;
     } else {
       el.innerHTML = SVG_ICONS[candy.type] || SVG_ICONS.strawberry;
     }
 
-    // Touch & Mouse Event Handlers
     this.attachInteractionHandlers(el, r, c);
     return el;
   }
@@ -798,31 +805,88 @@ class WalaaCrushGame {
   }
 
   /* ------------------------------------------------------------------------
-     Interaction: Click, Drag, Touch Swipe
+     Rock-Solid Mobile Touch & Desktop Mouse Controller
      ------------------------------------------------------------------------ */
   attachInteractionHandlers(candyEl, r, c) {
     let startX = 0;
     let startY = 0;
-    let isDragging = false;
+    let isSwiping = false;
+    let gestureActive = false;
 
-    // Pointer Down (Mouse or Touch)
-    candyEl.addEventListener('pointerdown', (e) => {
+    // --- MOBILE TOUCH EVENTS ---
+    candyEl.addEventListener('touchstart', (e) => {
       if (this.isProcessing) return;
+      this.sound.resumeAudio();
+
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      gestureActive = true;
+      isSwiping = false;
+    }, { passive: true });
+
+    candyEl.addEventListener('touchmove', (e) => {
+      if (!gestureActive || this.isProcessing) return;
+      if (e.cancelable) e.preventDefault(); // Stop mobile page bounce / scrolling
+
+      const touch = e.touches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      const threshold = 16; // Snappy mobile threshold
+
+      if (!isSwiping && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
+        isSwiping = true;
+        gestureActive = false;
+
+        let targetR = r;
+        let targetC = c;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          targetC += dx > 0 ? 1 : -1;
+        } else {
+          targetR += dy > 0 ? 1 : -1;
+        }
+
+        if (this.isValidCoord(targetR, targetC)) {
+          this.attemptSwap(r, c, targetR, targetC);
+        }
+      }
+    }, { passive: false });
+
+    candyEl.addEventListener('touchend', (e) => {
+      if (!gestureActive || this.isProcessing) return;
+      gestureActive = false;
+
+      // If no swipe occurred, it's a direct tap!
+      if (!isSwiping) {
+        this.handleCandyClick(r, c);
+      }
+    }, { passive: true });
+
+    candyEl.addEventListener('touchcancel', () => {
+      gestureActive = false;
+      isSwiping = false;
+    }, { passive: true });
+
+    // --- DESKTOP MOUSE EVENTS ---
+    candyEl.addEventListener('mousedown', (e) => {
+      if (this.isProcessing || e.button !== 0) return;
       startX = e.clientX;
       startY = e.clientY;
-      isDragging = true;
-      candyEl.setPointerCapture(e.pointerId);
+      gestureActive = true;
+      isSwiping = false;
     });
 
-    // Pointer Move / Swipe Detection
-    candyEl.addEventListener('pointermove', (e) => {
-      if (!isDragging || this.isProcessing) return;
+    candyEl.addEventListener('mousemove', (e) => {
+      if (!gestureActive || this.isProcessing) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      const threshold = 28; // Minimum swipe distance
+      const threshold = 20;
 
-      if (Math.abs(dx) > threshold || Math.abs(dy) > threshold) {
-        isDragging = false;
+      if (!isSwiping && (Math.abs(dx) > threshold || Math.abs(dy) > threshold)) {
+        isSwiping = true;
+        gestureActive = false;
+
         let targetR = r;
         let targetC = c;
 
@@ -838,17 +902,10 @@ class WalaaCrushGame {
       }
     });
 
-    // Pointer Up (Click or End of Drag)
-    candyEl.addEventListener('pointerup', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      if (this.isProcessing) return;
-
-      const dx = Math.abs(e.clientX - startX);
-      const dy = Math.abs(e.clientY - startY);
-
-      // If it was just a tap / click
-      if (dx < 10 && dy < 10) {
+    candyEl.addEventListener('mouseup', () => {
+      if (!gestureActive || this.isProcessing) return;
+      gestureActive = false;
+      if (!isSwiping) {
         this.handleCandyClick(r, c);
       }
     });
@@ -881,7 +938,7 @@ class WalaaCrushGame {
       this.clearSelection();
       this.attemptSwap(prevR, prevC, r, c);
     } else {
-      // Pick new candy
+      // Pick new candy directly
       this.clearSelection();
       this.selectedCandy = { r, c };
       const el = document.getElementById(`candy-${r}-${c}`);
@@ -903,12 +960,13 @@ class WalaaCrushGame {
   async attemptSwap(r1, c1, r2, c2) {
     this.isProcessing = true;
     this.clearHints();
+    this.clearSelection();
     this.sound.playSwap();
 
-    // Visual Swap
+    // Animate visual swap
     await this.animateSwapVisual(r1, c1, r2, c2);
 
-    // Data Swap
+    // Swap data
     const temp = this.grid[r1][c1];
     this.grid[r1][c1] = this.grid[r2][c2];
     this.grid[r2][c2] = temp;
@@ -917,7 +975,7 @@ class WalaaCrushGame {
     this.grid[r2][c2].r = r2;
     this.grid[r2][c2].c = c2;
 
-    // Check Special-Candy Swaps (e.g. Color Bomb + Striped, Bomb + Bomb, etc.)
+    // Check Special Combos
     const specialComboTriggered = await this.checkSpecialCandyCombos(r1, c1, r2, c2);
 
     if (specialComboTriggered) {
@@ -929,15 +987,15 @@ class WalaaCrushGame {
       return;
     }
 
-    // Check Standard Match 3+
-    const matches = this.findMatches();
+    // Check Standard Matches
+    const matches = this.findMatches().matches;
 
     if (matches.length > 0) {
       this.deductMove();
       await this.processBoardCascades();
       this.checkLevelConditions();
     } else {
-      // Invalid Swap: Revert back!
+      // Invalid swap: Revert!
       this.sound.playInvalid();
       await this.animateSwapVisual(r1, c1, r2, c2);
       const revert = this.grid[r1][c1];
@@ -974,7 +1032,6 @@ class WalaaCrushGame {
 
     await this.wait(210);
 
-    // Swap their IDs and datasets to match new positions
     el1.id = `candy-${r2}-${c2}`;
     el1.dataset.r = r2;
     el1.dataset.c = c2;
@@ -983,13 +1040,12 @@ class WalaaCrushGame {
     el2.dataset.r = r1;
     el2.dataset.c = c1;
 
-    // Reset transitions
     el1.style.transition = '';
     el2.style.transition = '';
   }
 
   /* ------------------------------------------------------------------------
-     Special Candy Combinations (Bomb + Bomb, Bomb + Striped, etc.)
+     Special Candy Combinations
      ------------------------------------------------------------------------ */
   async checkSpecialCandyCombos(r1, c1, r2, c2) {
     const cA = this.grid[r1][c1];
@@ -998,11 +1054,11 @@ class WalaaCrushGame {
 
     const cellSize = this.dom.boardGrid.clientWidth / 8;
 
-    // 1. Color Bomb + Color Bomb (Wipes entire board!)
+    // 1. Color Bomb + Color Bomb
     if (cA.special === 'color-bomb' && cB.special === 'color-bomb') {
       this.showToast('SUPER BOARD CLEAR! 🌟');
       this.sound.playExplosion();
-      this.particles.createShockwave(this.effectsCanvas.width / 2, this.effectsCanvas.height / 2, '#ffd700');
+      this.particles.createShockwave(this.effectsCanvas.width / (2 * this.particles.dpr), this.effectsCanvas.height / (2 * this.particles.dpr), '#ffd700');
 
       for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
@@ -1013,7 +1069,7 @@ class WalaaCrushGame {
       return true;
     }
 
-    // 2. Color Bomb + Regular / Striped Candy
+    // 2. Color Bomb + Regular / Striped
     if (cA.special === 'color-bomb' || cB.special === 'color-bomb') {
       const bomb = cA.special === 'color-bomb' ? cA : cB;
       const target = cA.special === 'color-bomb' ? cB : cA;
@@ -1022,7 +1078,6 @@ class WalaaCrushGame {
       this.sound.playLaser();
       this.destroyCandy(bomb.r, bomb.c, 250);
 
-      // Collect all candies of that color
       const matchingCells = [];
       for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
@@ -1034,7 +1089,6 @@ class WalaaCrushGame {
 
       if (target.special && target.special.startsWith('striped')) {
         this.showToast('STRIPED RAINBOW SHOWER! 🌈');
-        // Transform all candies of that color into striped candies!
         for (const cell of matchingCells) {
           if (this.grid[cell.r][cell.c]) {
             this.grid[cell.r][cell.c].special = Math.random() > 0.5 ? 'striped-h' : 'striped-v';
@@ -1057,7 +1111,7 @@ class WalaaCrushGame {
       return true;
     }
 
-    // 3. Striped + Wrapped (Clears 3 rows and 3 columns!)
+    // 3. Striped + Wrapped
     if ((cA.special?.startsWith('striped') && cB.special === 'wrapped') ||
         (cB.special?.startsWith('striped') && cA.special === 'wrapped')) {
       this.showToast('MEGA CROSS BLAST! 💥');
@@ -1085,7 +1139,7 @@ class WalaaCrushGame {
       return true;
     }
 
-    // 4. Striped + Striped (Cross Laser 1 row + 1 column)
+    // 4. Striped + Striped
     if (cA.special?.startsWith('striped') && cB.special?.startsWith('striped')) {
       this.showToast('CROSS LASER! ⚡');
       this.sound.playLaser();
@@ -1099,7 +1153,7 @@ class WalaaCrushGame {
       return true;
     }
 
-    // 5. Wrapped + Wrapped (Big 5x5 Bomb)
+    // 5. Wrapped + Wrapped
     if (cA.special === 'wrapped' && cB.special === 'wrapped') {
       this.showToast('DOUBLE LOVE BOMB! 💣');
       this.sound.playExplosion();
@@ -1118,13 +1172,13 @@ class WalaaCrushGame {
   }
 
   /* ------------------------------------------------------------------------
-     Match Finder: Horizontal, Vertical, L/T, and Special Creation
+     Match Finder
      ------------------------------------------------------------------------ */
   findMatches() {
     const matchedCoords = new Set();
-    const specialCreations = []; // { r, c, type, special }
+    const specialCreations = [];
 
-    // 1. Horizontal matches
+    // Horizontal matches
     for (let r = 0; r < this.rows; r++) {
       let runLength = 1;
       for (let c = 1; c <= this.cols; c++) {
@@ -1142,13 +1196,10 @@ class WalaaCrushGame {
               matchCells.push({ r, c: i });
             }
 
-            // Check for 5 in a row -> Color Bomb
             if (runLength >= 5) {
               const mid = matchCells[Math.floor(matchCells.length / 2)];
               specialCreations.push({ r: mid.r, c: mid.c, type: prev.type, special: 'color-bomb' });
-            }
-            // Check for 4 in a row -> Striped Candy
-            else if (runLength === 4) {
+            } else if (runLength === 4) {
               const mid = matchCells[1];
               specialCreations.push({ r: mid.r, c: mid.c, type: prev.type, special: 'striped-v' });
             }
@@ -1158,7 +1209,7 @@ class WalaaCrushGame {
       }
     }
 
-    // 2. Vertical matches
+    // Vertical matches
     for (let c = 0; c < this.cols; c++) {
       let runLength = 1;
       for (let r = 1; r <= this.rows; r++) {
@@ -1173,7 +1224,7 @@ class WalaaCrushGame {
             const matchCells = [];
             for (let i = startR; i < r; i++) {
               matchedCoords.add(`${i},${c}`);
-              matchCells.push({ r: i, c });
+              matchCells.push({ r, c });
             }
 
             if (runLength >= 5) {
@@ -1189,7 +1240,6 @@ class WalaaCrushGame {
       }
     }
 
-    // Convert matchedCoords to array of {r, c}
     const matchesArray = Array.from(matchedCoords).map(str => {
       const [r, c] = str.split(',').map(Number);
       return { r, c };
@@ -1199,7 +1249,7 @@ class WalaaCrushGame {
   }
 
   /* ------------------------------------------------------------------------
-     Board Cascading Pipeline (Matches -> Fall -> Refill -> Repeat)
+     Board Cascades Pipeline
      ------------------------------------------------------------------------ */
   async processBoardCascades() {
     let combo = 0;
@@ -1212,18 +1262,17 @@ class WalaaCrushGame {
       combo++;
       this.sound.playMatch(combo);
 
-      // Trigger compliment toast on combos
       if (combo >= 2) {
         const msg = COMPLIMENTS[Math.min(COMPLIMENTS.length - 1, combo - 1)];
         this.showToast(msg);
       }
 
-      // 1. Trigger special candy effects (Striped lasers, Wrapped blasts)
+      // 1. Trigger specials
       for (const m of matches) {
         this.triggerSpecialCandy(m.r, m.c);
       }
 
-      // 2. Clear jelly on matched tiles
+      // 2. Clear jelly
       for (const m of matches) {
         if (this.jellyGrid[m.r][m.c]) {
           this.jellyGrid[m.r][m.c] = false;
@@ -1233,7 +1282,7 @@ class WalaaCrushGame {
         }
       }
 
-      // 3. Destroy matched candies & award points
+      // 3. Destroy matched candies
       for (const m of matches) {
         const candy = this.grid[m.r][m.c];
         if (candy && candy.type === 'strawberry') {
@@ -1242,7 +1291,7 @@ class WalaaCrushGame {
         this.destroyCandy(m.r, m.c, 60 * combo);
       }
 
-      // 4. Place newly forged special candies
+      // 4. Place specials
       for (const spec of matchResult.specialCreations) {
         this.createdSpecials++;
         this.grid[spec.r][spec.c] = {
@@ -1251,7 +1300,6 @@ class WalaaCrushGame {
           type: spec.type,
           special: spec.special
         };
-        // Re-inject element
         const el = this.createCandyElement(this.grid[spec.r][spec.c], spec.r, spec.c);
         this.dom.boardGrid.appendChild(el);
         this.particles.createShockwave(
@@ -1262,18 +1310,17 @@ class WalaaCrushGame {
         this.sound.playSpecial();
       }
 
-      await this.wait(250);
+      await this.wait(240);
 
-      // 5. Gravity: Let candies drop down
+      // 5. Gravity
       await this.applyGravity();
 
-      // 6. Refill: Drop new candies from top
+      // 6. Refill
       await this.refillEmptyCells();
 
       await this.wait(180);
     }
 
-    // Check if board has valid moves left; if not, reshuffle!
     if (!this.hasPossibleMoves()) {
       await this.reshuffleBoard();
     }
@@ -1288,23 +1335,17 @@ class WalaaCrushGame {
     if (candy.special === 'striped-h') {
       this.sound.playLaser();
       this.particles.createBeam('horizontal', r, cellSize);
-      for (let col = 0; col < this.cols; col++) {
-        this.destroyCandy(r, col, 50);
-      }
+      for (let col = 0; col < this.cols; col++) this.destroyCandy(r, col, 50);
     } else if (candy.special === 'striped-v') {
       this.sound.playLaser();
       this.particles.createBeam('vertical', c, cellSize);
-      for (let row = 0; row < this.rows; row++) {
-        this.destroyCandy(row, c, 50);
-      }
+      for (let row = 0; row < this.rows; row++) this.destroyCandy(row, c, 50);
     } else if (candy.special === 'wrapped') {
       this.sound.playExplosion();
       this.particles.createShockwave(c * cellSize + cellSize / 2, r * cellSize + cellSize / 2, '#ff4081');
       for (let row = r - 1; row <= r + 1; row++) {
         for (let col = c - 1; col <= c + 1; col++) {
-          if (this.isValidCoord(row, col)) {
-            this.destroyCandy(row, col, 80);
-          }
+          if (this.isValidCoord(row, col)) this.destroyCandy(row, col, 80);
         }
       }
     }
@@ -1345,13 +1386,11 @@ class WalaaCrushGame {
         if (this.grid[r][c] !== null) {
           if (r !== emptyRow) {
             anyDropped = true;
-            // Move data down
             this.grid[emptyRow][c] = this.grid[r][c];
             this.grid[r][c] = null;
             this.grid[emptyRow][c].r = emptyRow;
             this.grid[emptyRow][c].c = c;
 
-            // Animate DOM
             const el = document.getElementById(`candy-${r}-${c}`);
             if (el) {
               el.id = `candy-${emptyRow}-${c}`;
@@ -1365,9 +1404,7 @@ class WalaaCrushGame {
       }
     }
 
-    if (anyDropped) {
-      await this.wait(230);
-    }
+    if (anyDropped) await this.wait(230);
   }
 
   async refillEmptyCells() {
@@ -1389,11 +1426,9 @@ class WalaaCrushGame {
           el.style.width = `${cellSize * 0.92}px`;
           el.style.height = `${cellSize * 0.92}px`;
           el.style.left = `${c * cellSize + cellSize * 0.04}px`;
-          // Start slightly above the board
           el.style.top = `${-spawnCount * cellSize}px`;
           this.dom.boardGrid.appendChild(el);
 
-          // Animate drop down
           setTimeout(() => {
             el.style.transition = 'top 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)';
             el.style.top = `${r * cellSize + cellSize * 0.04}px`;
@@ -1401,45 +1436,33 @@ class WalaaCrushGame {
         }
       }
     }
-    await this.wait(300);
+    await this.wait(290);
   }
 
   /* ------------------------------------------------------------------------
      Move Detection & Board Reshuffling
      ------------------------------------------------------------------------ */
   hasPossibleMoves() {
-    // Check if swapping any adjacent candies creates a match
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
-        // Special color bombs can swap with any neighbor
         if (this.grid[r][c]?.special === 'color-bomb') return true;
-
-        // Try swapping with Right
-        if (c < this.cols - 1) {
-          if (this.checkVirtualSwapMatch(r, c, r, c + 1)) return true;
-        }
-        // Try swapping with Down
-        if (r < this.rows - 1) {
-          if (this.checkVirtualSwapMatch(r, c, r + 1, c)) return true;
-        }
+        if (c < this.cols - 1 && this.checkVirtualSwapMatch(r, c, r, c + 1)) return true;
+        if (r < this.rows - 1 && this.checkVirtualSwapMatch(r, c, r + 1, c)) return true;
       }
     }
     return false;
   }
 
   checkVirtualSwapMatch(r1, c1, r2, c2) {
-    // Check if swap produces a match
     const cA = this.grid[r1][c1];
     const cB = this.grid[r2][c2];
     if (!cA || !cB) return false;
 
-    // Swap virtually
     this.grid[r1][c1] = cB;
     this.grid[r2][c2] = cA;
 
     const matches = this.findMatches().matches;
 
-    // Revert
     this.grid[r1][c1] = cA;
     this.grid[r2][c2] = cB;
 
@@ -1453,7 +1476,6 @@ class WalaaCrushGame {
 
     let solvable = false;
     while (!solvable) {
-      // Gather all current candies
       const candyPool = [];
       for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
@@ -1463,7 +1485,6 @@ class WalaaCrushGame {
         }
       }
 
-      // Shuffle pool
       candyPool.sort(() => Math.random() - 0.5);
 
       let idx = 0;
@@ -1478,7 +1499,6 @@ class WalaaCrushGame {
         }
       }
 
-      // Ensure no instant matches and has moves
       if (this.findMatches().matches.length === 0 && this.hasPossibleMoves()) {
         solvable = true;
       }
@@ -1522,7 +1542,7 @@ class WalaaCrushGame {
     clearTimeout(this.idleTimer);
     this.idleTimer = setTimeout(() => {
       this.showHint();
-    }, 5500);
+    }, 5000);
   }
 
   /* ------------------------------------------------------------------------
@@ -1562,7 +1582,6 @@ class WalaaCrushGame {
     this.showToast('Sweet Love Shower! 💖');
     this.sound.playWinFanfare();
 
-    // Spawns 2 free color bombs on the board!
     let placed = 0;
     for (let r = 0; r < this.rows && placed < 2; r++) {
       for (let c = 0; c < this.cols && placed < 2; c++) {
@@ -1603,12 +1622,11 @@ class WalaaCrushGame {
   }
 
   /* ------------------------------------------------------------------------
-     Level Objectives & Win / Game Over Conditions
+     Level Objectives & Win / Loss
      ------------------------------------------------------------------------ */
   checkLevelConditions() {
     const lvl = LEVELS[this.currentLevelIndex];
 
-    // Win check
     let win = false;
     if (lvl.jellies) {
       let jelliesLeft = 0;
@@ -1631,7 +1649,6 @@ class WalaaCrushGame {
       return;
     }
 
-    // Loss check
     if (lvl.moves !== Infinity && this.movesLeft <= 0) {
       this.handleGameOver();
     }
@@ -1643,7 +1660,6 @@ class WalaaCrushGame {
     this.dom.victoryMoves.textContent = this.movesLeft;
     this.openModal(this.dom.modalVictory);
 
-    // Save completed level
     const savedLevel = parseInt(localStorage.getItem('walaa_max_level') || '0', 10);
     if (this.currentLevelIndex + 1 > savedLevel) {
       localStorage.setItem('walaa_max_level', this.currentLevelIndex + 1);
@@ -1659,7 +1675,7 @@ class WalaaCrushGame {
   }
 
   /* ------------------------------------------------------------------------
-     Level Selector Modal Generator
+     Level Selector Modal
      ------------------------------------------------------------------------ */
   renderLevelSelector() {
     this.dom.levelSelectorGrid.innerHTML = '';
